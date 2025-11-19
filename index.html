@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MAKE IT HAPPEN – Hitachi Health Challenge</title>
+  <title>MAKE IT HITACHI HAPPEN – Health Challenge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Uses your logo as app / tab icon. Just make sure hitachi-logo.jpg is uploaded. -->
+  <link rel="apple-touch-icon" href="hitachi-logo.jpg">
+  <link rel="icon" type="image/jpeg" sizes="192x192" href="hitachi-logo.jpg">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
   <style>
     :root {
       --bg: #050814;
       --bg-alt: #0d1020;
-      --accent: #ff0044;
-      --accent-soft: #ff4f7f;
+      --accent: #e34c35; /* Hitachi-ish red */
+      --accent-soft: #ff7a5a;
       --text: #f5f5f5;
       --muted: #9ea3b5;
       --card: #14182a;
@@ -69,21 +77,25 @@
     }
 
     .logo {
-      font-weight: 700;
-      letter-spacing: 0.08em;
+      font-weight: 800;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       display: flex;
-      gap: 8px;
-      align-items: center;
+      flex-direction: column;
+      gap: 2px;
       white-space: nowrap;
     }
 
-    .logo span {
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-      font-size: 0.65rem;
+    .logo-main {
+      font-size: 1.3rem;
+      letter-spacing: 0.18em;
+    }
+
+    .logo-tag {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.2em;
     }
 
     nav {
@@ -271,12 +283,12 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), var(--accent-soft));
       color: #fff;
-      box-shadow: 0 0 24px rgba(255, 0, 68, 0.4);
+      box-shadow: 0 0 24px rgba(227, 76, 53, 0.45);
     }
 
     .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 0 28px rgba(255, 0, 68, 0.6);
+      box-shadow: 0 0 28px rgba(227, 76, 53, 0.7);
     }
 
     .btn-outline {
@@ -346,7 +358,7 @@
 
     input:focus {
       border-color: var(--accent-soft);
-      box-shadow: 0 0 0 1px rgba(255, 0, 68, 0.4);
+      box-shadow: 0 0 0 1px rgba(227, 76, 53, 0.4);
     }
 
     .hint {
@@ -472,7 +484,7 @@
     .actions-cell button:hover {
       border-color: var(--accent);
       color: #ffd3e0;
-      background: rgba(255, 0, 68, 0.1);
+      background: rgba(227, 76, 53, 0.15);
     }
 
     footer {
@@ -488,8 +500,9 @@
   <header>
     <div class="header-left">
       <div class="logo">
-        MAKE IT HAPPEN
-        <span>Hitachi Health</span>
+        <span class="logo-tag">MAKE IT</span>
+        <span class="logo-main">HITACHI</span>
+        <span class="logo-tag">HAPPEN</span>
       </div>
     </div>
     <nav>
@@ -525,7 +538,7 @@
             Log in / Create account
           </button>
           <div class="hint" style="margin-top: 6px;">
-            If this is your first time with this name, we will create a new account and place you into a league.
+            If this is your first time with this name, we’ll create a new account and place you into a league.
             Leagues are kept roughly the same size.
           </div>
         </form>
@@ -559,7 +572,7 @@
       </div>
 
       <div class="card">
-        <h2>Why MAKE IT HAPPEN?</h2>
+        <h2>Why MAKE IT HITACHI HAPPEN?</h2>
         <p>
           Small actions add up. When hundreds of people move a bit more each week, it helps everyone feel better:
           more energy, clearer head, happier teams.
@@ -610,15 +623,15 @@
           <div>
             <h3>How ranking works</h3>
             <p class="small">
-              The leaderboard uses:
+              The leaderboard sorts people using three things:
             </p>
             <ul class="small" style="padding-left: 18px; margin: 4px 0 10px;">
-              <li><strong>Distance first</strong> – more total kilometres puts you higher.</li>
-              <li><strong>Time second</strong> – if distance is the same, lower total time wins.</li>
+              <li><strong>1. Total distance</strong> – more kilometres puts you higher.</li>
+              <li><strong>2. Speed</strong> – average km per minute, faster is better.</li>
+              <li><strong>3. Time spent</strong> – if distance and speed are the same, less total time wins.</li>
             </ul>
             <p class="small">
-              Promotions & relegations are applied from these rankings. With 5 people, 1 moves up and 1 moves down.
-              With more people, up to 3 can move each way.
+              Promotions & relegations are usually applied once a month from the Stats page.
             </p>
           </div>
         </div>
@@ -697,7 +710,7 @@
           </button>
         </div>
         <p>
-          Every line you log builds your personal stats. See who is most consistent and who has improved the most.
+          Every activity builds your personal stats. See who is most consistent and who has improved the most.
           Promotions and relegations use these stats.
         </p>
         <div class="table-wrapper">
@@ -747,23 +760,28 @@
         <h3>Promotions & relegations</h3>
         <ul class="small" style="padding-left: 18px;">
           <li>Leagues have no hard limits. Many people can be in each league.</li>
-          <li>When you press “Apply promotions” on the Stats page, people move between leagues.</li>
-          <li>The number of people moved each way depends on how many players there are:
+          <li>Promotions and relegations are usually applied once per month from the Stats page.</li>
+          <li>The number of people moved each way depends on total number of players:
             <ul style="padding-left: 18px; margin-top: 4px;">
-              <li>5–9 players → 1 promotion + 1 relegation</li>
-              <li>10–14 players → 2 promotions + 2 relegations</li>
-              <li>15+ players → max 3 promotions + 3 relegations</li>
+              <li><strong>8+ players</strong> → 1 promotion + 1 relegation</li>
+              <li><strong>16+ players</strong> → 2 promotions + 2 relegations</li>
+              <li><strong>32+ players</strong> → 3 promotions + 3 relegations</li>
             </ul>
           </li>
           <li>Promotions come from the top of the ranking. Relegations come from the bottom.</li>
+          <li>Rankings are based on:
+            <ul style="padding-left: 18px; margin-top: 4px;">
+              <li>1. Total distance</li>
+              <li>2. Average speed (km per minute)</li>
+              <li>3. Total time (less is better if distance &amp; speed are the same)</li>
+            </ul>
+          </li>
         </ul>
 
         <h3>Prizes</h3>
         <ul class="small" style="padding-left: 18px;">
-          <li><strong>Monthly:</strong> The person at the top of the table at month-end wins a small prize.<br />
-            Example: sports shop voucher, extra day of remote work, or team shout-out.</li>
-          <li><strong>Yearly:</strong> The person with the strongest overall year wins a bigger prize.<br />
-            Example: running shoes, smartwatch, or wellness experience.</li>
+          <li><strong>Monthly:</strong> The person at the top of the table at month-end wins a small prize.</li>
+          <li><strong>Yearly:</strong> The person with the strongest overall year wins a bigger prize.</li>
         </ul>
 
         <p class="small">
@@ -987,28 +1005,32 @@
 
       let players = Object.values(byUser);
 
+      // Extra stats and ranking metrics
+      players.forEach((p) => {
+        p.avgDistance = p.runs > 0 ? p.totalDistance / p.runs : 0;
+        p.speed = p.totalTime > 0 ? p.totalDistance / p.totalTime : 0; // km per minute
+        let improvement = 0;
+        if (p.baselineDistance && p.baselineDistance > 0 && p.runs > 1) {
+          improvement = ((p.avgDistance - p.baselineDistance) / p.baselineDistance) * 100;
+        }
+        p.improvement = improvement;
+      });
+
+      // Sort by distance, then speed, then time
       players.sort((a, b) => {
         if (b.totalDistance !== a.totalDistance) {
           return b.totalDistance - a.totalDistance;
         }
+        if (b.speed !== a.speed) {
+          return b.speed - a.speed;
+        }
         return a.totalTime - b.totalTime;
       });
 
-      players = players.map((p, index) => {
-        const rank = index + 1;
-        const avgDistance = p.runs > 0 ? p.totalDistance / p.runs : 0;
-        let improvement = 0;
-        if (p.baselineDistance && p.baselineDistance > 0 && p.runs > 1) {
-          improvement = ((avgDistance - p.baselineDistance) / p.baselineDistance) * 100;
-        }
-
-        return {
-          ...p,
-          rank,
-          avgDistance,
-          improvement
-        };
-      });
+      players = players.map((p, index) => ({
+        ...p,
+        rank: index + 1
+      }));
 
       return players;
     }
@@ -1022,10 +1044,18 @@
         return;
       }
 
-      let moves = Math.floor(total / 5);
-      if (moves < 1) moves = 1;
-      if (moves > 3) moves = 3;
+      let moves = 0;
+      if (total >= 32) moves = 3;
+      else if (total >= 16) moves = 2;
+      else if (total >= 8) moves = 1;
+      else moves = 0;
 
+      if (moves === 0) {
+        alert("Not enough players yet. You need at least 8 players for promotions and relegations.");
+        return;
+      }
+
+      // Promote from top
       let promoted = 0;
       for (let i = 0; i < players.length && promoted < moves; i++) {
         const p = players[i];
@@ -1037,6 +1067,7 @@
         promoted++;
       }
 
+      // Relegate from bottom
       let relegated = 0;
       for (let i = players.length - 1; i >= 0 && relegated < moves; i--) {
         const p = players[i];
@@ -1084,7 +1115,10 @@
 
       const statusSpan = document.createElement("span");
       statusSpan.id = "user-status";
-      statusSpan.innerHTML = `Logged in as <span class="user-name">${currentUser.name}</span> · <span class="badge-league ${currentUser.league}">${currentUser.league.charAt(0).toUpperCase() + currentUser.league.slice(1)}</span>`;
+      statusSpan.innerHTML =
+        `Logged in as <span class="user-name">${currentUser.name}</span> · ` +
+        `<span class="badge-league ${currentUser.league}">` +
+        `${currentUser.league.charAt(0).toUpperCase() + currentUser.league.slice(1)}</span>`;
       el.appendChild(statusSpan);
 
       const logoutBtn = document.createElement("button");
@@ -1136,7 +1170,8 @@
         tr.innerHTML = `
           <td class="rank-medal">${rankSymbol}</td>
           <td>${player.name}</td>
-          <td><span class="badge-league ${player.league}">${player.league.charAt(0).toUpperCase() + player.league.slice(1)}</span></td>
+          <td><span class="badge-league ${player.league}">
+            ${player.league.charAt(0).toUpperCase() + player.league.slice(1)}</span></td>
           <td>${player.totalDistance.toFixed(2)} km</td>
           <td>${player.totalTime.toFixed(1)} min</td>
         `;
@@ -1163,7 +1198,8 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${stats.name}</td>
-          <td><span class="badge-league ${stats.league}">${stats.league.charAt(0).toUpperCase() + stats.league.slice(1)}</span></td>
+          <td><span class="badge-league ${stats.league}">
+            ${stats.league.charAt(0).toUpperCase() + stats.league.slice(1)}</span></td>
           <td>${stats.runs}</td>
           <td>${stats.totalDistance.toFixed(2)} km</td>
           <td>${stats.avgDistance.toFixed(2)} km</td>
