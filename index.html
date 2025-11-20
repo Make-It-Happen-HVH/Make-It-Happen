@@ -8,7 +8,7 @@
   <!-- Uses your logo as app / tab icon. Just make sure hitachi-logo.jpg is uploaded. -->
   <link rel="apple-touch-icon" href="hitachi-logo.jpg">
   <link rel="icon" type="image/jpeg" sizes="192x192" href="hitachi-logo.jpg">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#050814">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
@@ -39,7 +39,6 @@
       flex-direction: column;
     }
 
-    /* Device-specific tweaks */
     body[data-device="mobile"] main {
       padding: 18px 10px 28px;
     }
@@ -511,6 +510,7 @@
       <button onclick="requireLoginThenShow('leaderboard')">Leaderboard</button>
       <button onclick="requireLoginThenShow('stats')">Stats</button>
       <button onclick="requireLoginThenShow('rules')">Rules &amp; Prizes</button>
+      <button onclick="showScene('about')">About</button>
     </nav>
     <div class="user-controls" id="user-controls">
       <span id="user-status">Not logged in</span>
@@ -669,7 +669,7 @@
           </table>
         </div>
         <div id="no-entries" class="empty-state">
-          No activities yet. Be the first to log a run and grab the number one spot.
+          No players yet. Create an account and you will appear here.
         </div>
       </div>
 
@@ -732,7 +732,7 @@
           </table>
         </div>
         <div id="no-stats" class="empty-state">
-          Stats will appear as soon as people start logging their activities.
+          Stats will appear as soon as people start logging their activities (players appear as soon as they create an account).
         </div>
       </div>
     </section>
@@ -790,6 +790,37 @@
         </p>
       </div>
     </section>
+
+    <!-- Scene 5: About -->
+    <section id="scene-about" class="scene">
+      <div class="card">
+        <h2>About “Make it happen”</h2>
+        <p>
+          “Make it happen” is a simple health challenge for Hitachi teams and friends who want to move a bit more,
+          without paying for apps, subscriptions or extra gadgets. You log what you do and watch yourself climb the table.
+        </p>
+        <p>
+          The idea is not to turn people into athletes. It is to make movement feel normal, fun and slightly addictive
+          in a good way. Run, walk or cycle, add your distance, and see where you sit in your league.
+        </p>
+        <p>
+          It is built to be:
+        </p>
+        <ul style="padding-left: 18px;" class="small">
+          <li><strong>For fun</strong> – no pressure, no judgement, just friendly competition.</li>
+          <li><strong>For health</strong> – small sessions add up to better sleep, more energy and a clearer head.</li>
+          <li><strong>For free</strong> – no paywalls, no data selling, no ads following you around.</li>
+        </ul>
+        <p class="small">
+          Promotions and relegations keep things exciting. Each month, people can move up or down based on how much
+          they have done, how fast they moved and how consistent they were.
+        </p>
+        <p class="small">
+          This prototype is designed so anyone can understand it quickly, use it on their own, or roll it out to a team
+          as a light, positive health challenge.
+        </p>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -798,9 +829,9 @@
 
   <script>
     // ========= CONSTANTS =========
-    const STORAGE_KEY_ENTRIES = "mih_entries_v4";
-    const STORAGE_KEY_USERS = "mih_users_v4";
-    const STORAGE_KEY_CURRENT_USER = "mih_current_user_v4";
+    const STORAGE_KEY_ENTRIES = "mih_entries_v5";
+    const STORAGE_KEY_USERS = "mih_users_v5";
+    const STORAGE_KEY_CURRENT_USER = "mih_current_user_v5";
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const LEAGUES = ["amateurs", "intermediates", "pros", "legends"];
 
@@ -960,6 +991,8 @@
           btn.classList.add("active");
         }
       });
+
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     }
 
     function requireLoginThenShow(name) {
@@ -975,10 +1008,9 @@
     function getPlayerStats() {
       const byUser = {};
 
-      // First create a stats object for EVERY user, even if they have 0 activities
+      // start with all users so they appear even with 0 runs
       users.forEach((user) => {
-        const key = user.id;
-        byUser[key] = {
+        byUser[user.id] = {
           userId: user.id,
           name: user.name,
           league: user.league || "amateurs",
@@ -990,7 +1022,6 @@
         };
       });
 
-      // Then add activity data on top
       entries.forEach((e) => {
         const user = getUserById(e.userId);
         if (!user) return;
@@ -1190,7 +1221,6 @@
 
       tbody.innerHTML = "";
 
-      // CHANGED: show "no stats" only if there are no users at all.
       if (!users.length) {
         if (empty) empty.style.display = "block";
         return;
@@ -1414,7 +1444,7 @@
 
     // ========= INITIALISE =========
     function init() {
-      const isMobile = detectDevice();
+      detectDevice();
       loadEntries();
       loadUsers();
       cleanupOldAccounts();
@@ -1436,6 +1466,7 @@
       renderMyActivities();
 
       if (currentUser) {
+        const isMobile = detectDevice();
         showScene(isMobile ? "leaderboard" : "welcome");
       } else {
         showScene("login");
