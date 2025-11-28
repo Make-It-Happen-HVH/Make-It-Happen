@@ -1,1479 +1,1613 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>MAKE IT HITACHI HAPPEN – Health Challenge</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Make It Happen – Hitachi Vantara</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Uses your logo as app / tab icon. Just make sure hitachi-logo.jpg is uploaded. -->
+  <!-- Icons -->
   <link rel="apple-touch-icon" href="hitachi-logo.jpg">
   <link rel="icon" type="image/jpeg" sizes="192x192" href="hitachi-logo.jpg">
-  <meta name="theme-color" content="#050814">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #050814;
-      --bg-alt: #0d1020;
-      --accent: #e34c35; /* Hitachi-ish red */
-      --accent-soft: #ff7a5a;
-      --text: #f5f5f5;
-      --muted: #9ea3b5;
-      --card: #14182a;
-      --border: #262b3e;
-      --radius: 14px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #151a33, #050814);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      font-family: Inter, sans-serif;
+      background: #f7f7f7;
+      color: #222;
     }
-
-    body[data-device="mobile"] main {
-      padding: 18px 10px 28px;
-    }
-
-    body[data-device="mobile"] h1 {
-      font-size: 1.8rem;
-    }
-
-    body[data-device="mobile"] table {
-      font-size: 0.8rem;
-    }
-
-    /* ========== HEADER ========== */
 
     header {
-      padding: 10px 16px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      column-gap: 16px;
-      row-gap: 6px;
-      border-bottom: 1px solid #1e2235;
-      background: rgba(5, 8, 20, 0.9);
-      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
       position: sticky;
       top: 0;
       z-index: 10;
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      min-width: 0;
-    }
-
-    .logo {
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      white-space: nowrap;
-    }
-
-    .logo-main {
-      font-size: 1.3rem;
-      letter-spacing: 0.18em;
-    }
-
-    .logo-tag {
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 0.2em;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding: 2px 0;
-    }
-
-    nav::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    nav::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 999px;
-    }
-
-    nav button {
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      padding: 6px 10px;
-      font-size: 0.8rem;
+    header nav button {
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      font-size: 15px;
       cursor: pointer;
-      transition: 0.15s ease;
-      white-space: nowrap;
     }
 
-    nav button:hover {
-      color: var(--text);
-      border-color: var(--accent-soft);
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    nav button.active {
-      color: #fff;
-      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-      border-color: transparent;
-    }
-
-    .user-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      color: var(--muted);
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      min-width: 0;
-    }
-
-    .user-name {
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .btn-small {
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      padding: 4px 8px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      transition: 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .btn-small:hover {
-      color: var(--text);
-      border-color: var(--accent-soft);
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .btn-small.danger:hover {
-      border-color: var(--accent);
-      color: #ffd3e0;
-    }
-
-    @media (max-width: 720px) {
-      header {
-        grid-template-columns: 1fr;
-        align-items: flex-start;
-      }
-
-      .header-left {
-        justify-content: space-between;
-        width: 100%;
-      }
-
-      nav {
-        justify-content: flex-start;
-      }
-
-      .user-controls {
-        justify-content: flex-start;
-      }
-    }
-
-    /* ========== MAIN LAYOUT ========== */
-
-    main {
-      flex: 1;
-      max-width: 980px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
+    header nav button.active {
+      font-weight: bold;
+      color: #e60028; /* Hitachi red */
     }
 
     .scene {
       display: none;
-      animation: fadeIn 0.25s ease;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
     }
-
     .scene.active {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card {
-      background: radial-gradient(circle at top left, #1f2340, #111425);
-      border-radius: var(--radius);
-      padding: 24px 20px;
-      border: 1px solid var(--border);
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
-    }
-
-    .card + .card {
-      margin-top: 16px;
-    }
-
-    h1, h2, h3 {
-      margin: 0 0 8px;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 4vw, 2.6rem);
-    }
-
-    h2 {
-      font-size: 1.3rem;
-    }
-
-    p {
-      margin: 4px 0 12px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .tagline {
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
+    h1, h2 {
+      color: #e60028; /* Hitachi red */
     }
 
     .btn {
-      border-radius: 999px;
+      background: #e60028;
+      color: white;
       border: none;
-      padding: 10px 18px;
-      font-size: 0.9rem;
+      padding: 10px 16px;
+      border-radius: 6px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.15s ease;
-      white-space: nowrap;
+      font-weight: 600;
+      margin: 8px 0;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-      color: #fff;
-      box-shadow: 0 0 24px rgba(227, 76, 53, 0.45);
+    .btn-small {
+      padding: 6px 10px;
+      font-size: 14px;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 28px rgba(227, 76, 53, 0.7);
+    .danger {
+      background: #b00000;
     }
 
-    .btn-outline {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .btn-outline:hover {
-      color: var(--text);
-      border-color: var(--accent-soft);
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 10px 0 0;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .pill {
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    form {
-      display: grid;
-      gap: 10px;
-    }
-
-    label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    input {
+    .input {
       width: 100%;
-      padding: 8px 9px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #080b18;
-      color: var(--text);
-      font-size: 0.85rem;
-      outline: none;
-      transition: 0.15s ease;
-    }
-
-    input:focus {
-      border-color: var(--accent-soft);
-      box-shadow: 0 0 0 1px rgba(227, 76, 53, 0.4);
-    }
-
-    .hint {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    @media (max-width: 480px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
+      padding: 10px;
+      margin: 6px 0 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.85rem;
-      min-width: 100%;
+      margin-top: 14px;
     }
 
     th, td {
-      padding: 7px 8px;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
       text-align: left;
-      border-bottom: 1px solid #23263a;
-      vertical-align: middle;
-    }
-
-    th {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-    }
-
-    tbody tr:nth-child(even) {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    tbody tr:first-child td {
-      border-top: 1px solid #23263a;
-    }
-
-    .rank-medal {
-      font-size: 0.9rem;
     }
 
     .badge-league {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 3px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--muted);
-      white-space: nowrap;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: white;
     }
-
-    .badge-league.amateurs { border-color: #73d1ff; color: #a6dfff; }
-    .badge-league.intermediates { border-color: #7bffb7; color: #b9ffda; }
-    .badge-league.pros { border-color: #ffd26f; color: #ffe29a; }
-    .badge-league.legends { border-color: #ff8ec9; color: #ffc0e1; }
-
-    .top-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .filter-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .filter-row select {
-      width: auto;
-      min-width: 130px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #080b18;
-      color: var(--text);
-      font-size: 0.8rem;
-    }
-
-    .small {
-      font-size: 0.8rem;
-    }
-
-    .empty-state {
-      margin-top: 8px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .actions-cell button {
-      padding: 3px 6px;
-      font-size: 0.7rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .actions-cell button:hover {
-      border-color: var(--accent);
-      color: #ffd3e0;
-      background: rgba(227, 76, 53, 0.15);
-    }
-
-    footer {
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--muted);
-      padding: 6px 12px 14px;
-      opacity: 0.75;
-    }
+    .amateurs { background: #6c757d; }
+    .intermediates { background: #007bff; }
+    .pros { background: #28a745; }
+    .legends { background: #e60028; }
   </style>
 </head>
+
 <body>
-  <header>
-    <div class="header-left">
-      <div class="logo">
-        <span class="logo-tag">MAKE IT</span>
-        <span class="logo-main">HITACHI</span>
-        <span class="logo-tag">HAPPEN</span>
-      </div>
-    </div>
-    <nav>
-      <button class="active" onclick="showScene('login')">Login</button>
-      <button onclick="requireLoginThenShow('welcome')">Welcome</button>
-      <button onclick="requireLoginThenShow('leaderboard')">Leaderboard</button>
-      <button onclick="requireLoginThenShow('stats')">Stats</button>
-      <button onclick="requireLoginThenShow('rules')">Rules &amp; Prizes</button>
-      <button onclick="showScene('about')">About</button>
-    </nav>
-    <div class="user-controls" id="user-controls">
-      <span id="user-status">Not logged in</span>
-    </div>
-  </header>
 
-  <main>
-    <!-- Scene 0: Login -->
-    <section id="scene-login" class="scene active">
-      <div class="card">
-        <h1>Log in to make it happen</h1>
-        <p class="tagline">
-          Create a simple account so the site knows who you are and only you can manage your activities.
-        </p>
-        <form id="login-form" style="margin-top: 12px;">
-          <div>
-            <label for="login-name">Name</label>
-            <input id="login-name" type="text" placeholder="e.g. Daniel" required />
-          </div>
-          <div>
-            <label for="login-password">Password</label>
-            <input id="login-password" type="password" placeholder="Choose something simple" required />
-          </div>
-          <button type="submit" class="btn btn-primary" style="margin-top: 6px;">
-            Log in / Create account
-          </button>
-          <div class="hint" style="margin-top: 6px;">
-            If this is your first time with this name, we’ll create a new account and place you into a league.
-            Leagues are kept roughly the same size.
-          </div>
-        </form>
-        <p class="small" style="margin-top: 14px;">
-          Your login is saved on this browser. Accounts that have been logged out for more than 30 days are
-          automatically deleted, together with their activities.
-        </p>
-      </div>
-    </section>
+<header>
+  <nav>
+    <button onclick="showScene('welcome')" data-i18n="nav.welcome"></button>
+    <button onclick="showScene('leaderboard')" data-i18n="nav.leaderboard"></button>
+    <button onclick="showScene('stats')" data-i18n="nav.stats"></button>
+    <button onclick="showScene('rules')" data-i18n="nav.rules"></button>
+    <button onclick="showScene('about')" data-i18n="nav.about"></button>
+    <button onclick="showScene('login')" data-i18n="nav.login"></button>
+  </nav>
 
-    <!-- Scene 1: Welcome -->
-    <section id="scene-welcome" class="scene">
-      <div class="card">
-        <h1>Move more. Compete. Make it happen.</h1>
-        <p class="tagline">
-          A simple challenge for Hitachi teams: run, walk or cycle, log your distance, and climb the leaderboard.
-        </p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" onclick="requireLoginThenShow('leaderboard')">
-            Start logging my distance →
-          </button>
-          <button class="btn btn-outline" onclick="requireLoginThenShow('rules')">
-            How it works
-          </button>
-        </div>
-        <div class="pill-row">
-          <span class="pill">4 leagues: Amateurs, Intermediates, Pros, Legends</span>
-          <span class="pill">New people are placed where the leagues are lightest</span>
-          <span class="pill">Promotions & relegations keep things moving</span>
-        </div>
-      </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <select id="lang-select">
+      <option value="en">English</option>
+      <option value="da">Dansk</option>
+      <option value="ja">日本語</option>
+    </select>
 
-      <div class="card">
-        <h2>Why MAKE IT HITACHI HAPPEN?</h2>
-        <p>
-          Small actions add up. When hundreds of people move a bit more each week, it helps everyone feel better:
-          more energy, clearer head, happier teams.
-        </p>
-        <p>
-          This site keeps things fun. Log your activity, see where you rank, and move through the leagues as
-          promotions and relegations are applied.
-        </p>
-      </div>
-    </section>
+    <div id="user-controls"></div>
+  </div>
+</header>
 
-    <!-- Scene 2: Leaderboard -->
-    <section id="scene-leaderboard" class="scene">
-      <div class="card">
-        <div class="grid">
-          <div>
-            <h2>Add your latest activity</h2>
-            <p>
-              Log any run, walk or ride. Use kilometres and minutes so the leaderboard stays fair for everyone.
-            </p>
-            <form id="entry-form">
-              <div>
-                <label for="name">Your name</label>
-                <input id="name" type="text" disabled placeholder="Log in to set your name" />
-                <div class="hint">Name comes from your account. You cannot change it here.</div>
-              </div>
+<!-- WELCOME SCENE -->
+<section id="scene-welcome" class="scene active">
+  <h1 data-i18n="welcome.title"></h1>
+  <p data-i18n="welcome.subtitle"></p>
+  <button class="btn" onclick="showScene('login')" data-i18n="welcome.cta"></button>
+</section>
 
-              <div class="form-row">
-                <div>
-                  <label for="distance">Distance (km)</label>
-                  <input id="distance" type="number" step="0.1" min="0" placeholder="e.g. 5" required />
-                </div>
-                <div>
-                  <label for="time">Time (minutes)</label>
-                  <input id="time" type="number" step="0.1" min="0" placeholder="e.g. 28" required />
-                </div>
-              </div>
+<!-- LOGIN SCENE -->
+<section id="scene-login" class="scene">
+  <h1 data-i18n="login.title"></h1>
+  <p data-i18n="login.description"></p>
 
-              <button type="submit" class="btn btn-primary" style="margin-top: 4px;">
-                Save my activity
-              </button>
-              <div class="hint">
-                Leagues have unlimited spaces. New accounts are spread across leagues so the numbers stay balanced.
-              </div>
-            </form>
-          </div>
+  <form id="login-form">
+    <label data-i18n="login.name"></label>
+    <input id="login-name" class="input" type="text">
 
-          <div>
-            <h3>How ranking works</h3>
-            <p class="small">
-              The leaderboard sorts people using three things:
-            </p>
-            <ul class="small" style="padding-left: 18px; margin: 4px 0 10px;">
-              <li><strong>1. Total distance</strong> – more kilometres puts you higher.</li>
-              <li><strong>2. Speed</strong> – average km per minute, faster is better.</li>
-              <li><strong>3. Time spent</strong> – if distance and speed are the same, less total time wins.</li>
-            </ul>
-            <p class="small">
-              Promotions & relegations are usually applied once a month from the Stats page.
-            </p>
-          </div>
-        </div>
-      </div>
+    <label data-i18n="login.password"></label>
+    <input id="login-password" class="input" type="password">
 
-      <div class="card">
-        <div class="top-row">
-          <h2>Live leaderboard</h2>
-          <div class="filter-row">
-            <span>League:</span>
-            <select id="league-filter" onchange="renderLeaderboard()">
-              <option value="all">All leagues</option>
-              <option value="amateurs">Amateurs</option>
-              <option value="intermediates">Intermediates</option>
-              <option value="pros">Pros</option>
-              <option value="legends">Legends</option>
-            </select>
-          </div>
-        </div>
+    <label data-i18n="login.code"></label>
+    <input id="login-code" class="input" maxlength="20">
 
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Participant</th>
-                <th>League</th>
-                <th>Total distance</th>
-                <th>Total time</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-              <!-- Filled by JS -->
-            </tbody>
-          </table>
-        </div>
-        <div id="no-entries" class="empty-state">
-          No players yet. Create an account and you will appear here.
-        </div>
-      </div>
+    <button class="btn" data-i18n="login.submit"></button>
+  </form>
 
-      <div class="card">
-        <h3>My activities</h3>
-        <p class="small">
-          Only the activities from the account you are logged in with are shown here. You can delete them if you make a
-          mistake.
-        </p>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Distance</th>
-                <th>Time</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="my-activities-body">
-              <!-- Filled by JS -->
-            </tbody>
-          </table>
-        </div>
-        <div id="no-my-activities" class="empty-state">
-          No activities yet for this account.
-        </div>
-      </div>
-    </section>
+  <p data-i18n="login.note"></p>
+</section>
 
-    <!-- Scene 3: Stats -->
-    <section id="scene-stats" class="scene">
-      <div class="card">
-        <div class="top-row" style="margin-bottom: 8px;">
-          <h2>Player stats</h2>
-          <button class="btn-small" onclick="applyPromotions()">
-            Apply promotions now
-          </button>
-        </div>
-        <p>
-          Every activity builds your personal stats. See who is most consistent and who has improved the most.
-          Promotions and relegations use these stats.
-        </p>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Participant</th>
-                <th>League</th>
-                <th>Runs</th>
-                <th>Total distance</th>
-                <th>Average distance</th>
-                <th>Best distance</th>
-                <th>Improvement</th>
-              </tr>
-            </thead>
-            <tbody id="stats-body">
-              <!-- Filled by JS -->
-            </tbody>
-          </table>
-        </div>
-        <div id="no-stats" class="empty-state">
-          Stats will appear as soon as people start logging their activities (players appear as soon as they create an account).
-        </div>
-      </div>
-    </section>
+<!-- LEADERBOARD SCENE -->
+<section id="scene-leaderboard" class="scene">
+  <h1 data-i18n="leaderboard.title"></h1>
 
-    <!-- Scene 4: Rules & Prizes -->
-    <section id="scene-rules" class="scene">
-      <div class="card">
-        <h2>Rules, leagues and prizes</h2>
-        <h3>Leagues & starting positions</h3>
-        <p class="small">
-          There are four leagues:
-        </p>
-        <ul class="small" style="padding-left: 18px;">
-          <li><strong>Amateurs</strong></li>
-          <li><strong>Intermediates</strong></li>
-          <li><strong>Pros</strong></li>
-          <li><strong>Legends</strong></li>
-        </ul>
-        <p class="small">
-          When a new account is created, we look at how many people are already in each league and place the new
-          person into one of the leagues with the fewest people, starting from the lowest league. That way, league
-          sizes stay very close together.
-        </p>
+  <label data-i18n="leaderboard.filter"></label>
+  <select id="league-filter">
+    <option value="all" data-i18n="leaderboard.all"></option>
+    <option value="amateurs" data-i18n="league.amateurs"></option>
+    <option value="intermediates" data-i18n="league.intermediates"></option>
+    <option value="pros" data-i18n="league.pros"></option>
+    <option value="legends" data-i18n="league.legends"></option>
+  </select>
 
-        <h3>Promotions & relegations</h3>
-        <ul class="small" style="padding-left: 18px;">
-          <li>Leagues have no hard limits. Many people can be in each league.</li>
-          <li>Promotions and relegations are usually applied once per month from the Stats page.</li>
-          <li>The number of people moved each way depends on total number of players:
-            <ul style="padding-left: 18px; margin-top: 4px;">
-              <li><strong>8+ players</strong> → 1 promotion + 1 relegation</li>
-              <li><strong>16+ players</strong> → 2 promotions + 2 relegations</li>
-              <li><strong>32+ players</strong> → 3 promotions + 3 relegations</li>
-            </ul>
-          </li>
-          <li>Promotions come from the top of the ranking. Relegations come from the bottom.</li>
-          <li>Rankings are based on:
-            <ul style="padding-left: 18px; margin-top: 4px;">
-              <li>1. Total distance</li>
-              <li>2. Average speed (km per minute)</li>
-              <li>3. Total time (less is better if distance &amp; speed are the same)</li>
-            </ul>
-          </li>
-        </ul>
+  <table>
+    <thead>
+      <tr>
+        <th data-i18n="lb.rank"></th>
+        <th data-i18n="lb.name"></th>
+        <th data-i18n="lb.league"></th>
+        <th data-i18n="lb.distance"></th>
+        <th data-i18n="lb.time"></th>
+      </tr>
+    </thead>
+    <tbody id="leaderboard-body"></tbody>
+  </table>
 
-        <h3>Prizes</h3>
-        <ul class="small" style="padding-left: 18px;">
-          <li><strong>Monthly:</strong> The person at the top of the table at month-end wins a small prize.</li>
-          <li><strong>Yearly:</strong> The person with the strongest overall year wins a bigger prize.</li>
-        </ul>
+  <p id="no-entries" data-i18n="leaderboard.none"></p>
+</section>
 
-        <p class="small">
-          Exact prize details can be decided by the local Hitachi team; the site simply makes it easy to see who is
-          on top and who is improving fastest.
-        </p>
-      </div>
-    </section>
+<!-- STATS SCENE -->
+<section id="scene-stats" class="scene">
+  <h1 data-i18n="stats.title"></h1>
 
-    <!-- Scene 5: About -->
-    <section id="scene-about" class="scene">
-      <div class="card">
-        <h2>About “Make it happen”</h2>
-        <p>
-          “Make it happen” is a simple health challenge for Hitachi teams and friends who want to move a bit more,
-          without paying for apps, subscriptions or extra gadgets. You log what you do and watch yourself climb the table.
-        </p>
-        <p>
-          The idea is not to turn people into athletes. It is to make movement feel normal, fun and slightly addictive
-          in a good way. Run, walk or cycle, add your distance, and see where you sit in your league.
-        </p>
-        <p>
-          It is built to be:
-        </p>
-        <ul style="padding-left: 18px;" class="small">
-          <li><strong>For fun</strong> – no pressure, no judgement, just friendly competition.</li>
-          <li><strong>For health</strong> – small sessions add up to better sleep, more energy and a clearer head.</li>
-          <li><strong>For free</strong> – no paywalls, no data selling, no ads following you around.</li>
-        </ul>
-        <p class="small">
-          Promotions and relegations keep things exciting. Each month, people can move up or down based on how much
-          they have done, how fast they moved and how consistent they were.
-        </p>
-        <p class="small">
-          This prototype is designed so anyone can understand it quickly, use it on their own, or roll it out to a team
-          as a light, positive health challenge.
-        </p>
-      </div>
-    </section>
-  </main>
+  <table>
+    <thead>
+      <tr>
+        <th data-i18n="lb.name"></th>
+        <th data-i18n="lb.league"></th>
+        <th data-i18n="stats.runs"></th>
+        <th data-i18n="stats.totaldistance"></th>
+        <th data-i18n="stats.totaltime"></th>
+        <th data-i18n="stats.avgdistance"></th>
+        <th data-i18n="stats.bestdistance"></th>
+        <th data-i18n="stats.improvement"></th>
+      </tr>
+    </thead>
+    <tbody id="stats-body"></tbody>
+  </table>
 
-  <footer>
-    Prototype created for the Hitachi “Make It Happen” health challenge.
-  </footer>
+  <p id="no-stats" data-i18n="stats.none"></p>
 
-  <script>
-    // ========= CONSTANTS =========
-    const STORAGE_KEY_ENTRIES = "mih_entries_v5";
-    const STORAGE_KEY_USERS = "mih_users_v5";
-    const STORAGE_KEY_CURRENT_USER = "mih_current_user_v5";
-    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-    const LEAGUES = ["amateurs", "intermediates", "pros", "legends"];
+  <div style="margin-top:20px;">
+    <button class="btn" onclick="applyPromotions()" data-i18n="stats.promotions"></button>
+    <button class="btn" onclick="placeNewJoiners()" data-i18n="stats.placejoiners"></button>
+  </div>
+</section>
 
-    // ========= STATE =========
-    let entries = [];
-    let users = [];
-    let currentUser = null;
+<!-- RULES SCENE -->
+<section id="scene-rules" class="scene">
+  <h1 data-i18n="rules.title"></h1>
 
-    // ========= DEVICE DETECTION =========
-    function detectDevice() {
-      const isMobile = window.innerWidth < 768;
-      document.body.setAttribute("data-device", isMobile ? "mobile" : "desktop");
-      return isMobile;
+  <h2 data-i18n="rules.joiningtitle"></h2>
+  <p data-i18n="rules.joiningtext"></p>
+
+  <h2 data-i18n="rules.leaguetitle"></h2>
+  <p data-i18n="rules.leaguetext"></p>
+
+  <h2 data-i18n="rules.promotiontitle"></h2>
+  <p data-i18n="rules.promotiontext"></p>
+
+  <h2 data-i18n="rules.prizetitle"></h2>
+  <p data-i18n="rules.prizetext"></p>
+</section>
+
+<!-- ABOUT SCENE -->
+<section id="scene-about" class="scene">
+  <h1 data-i18n="about.title"></h1>
+  <p data-i18n="about.text1"></p>
+  <p data-i18n="about.text2"></p>
+  <p data-i18n="about.text3"></p>
+</section>
+
+<!-- ENTRY FORM + MY ACTIVITIES -->
+<section id="scene-entry" class="scene">
+  <h1 data-i18n="entry.title"></h1>
+
+  <form id="entry-form">
+    <label data-i18n="entry.distance"></label>
+    <input id="distance" type="number" step="0.01" class="input">
+
+    <label data-i18n="entry.time"></label>
+    <input id="time" type="number" step="0.01" class="input">
+
+    <button class="btn" data-i18n="entry.submit"></button>
+  </form>
+
+  <h2 data-i18n="entry.my"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th data-i18n="entry.date"></th>
+        <th data-i18n="entry.distance"></th>
+        <th data-i18n="entry.time"></th>
+        <th data-i18n="entry.actions"></th>
+      </tr>
+    </thead>
+    <tbody id="my-activities-body"></tbody>
+  </table>
+
+  <p id="no-my-activities" data-i18n="entry.none"></p>
+</section>
+
+<!-- PROFILE SCENE -->
+<section id="profile-card" class="scene" style="display:none;">
+  <h1 id="profile-title"></h1>
+  <p id="profile-summary"></p>
+
+  <table>
+    <tr><th data-i18n="profile.runs"></th><td id="profile-runs"></td></tr>
+    <tr><th data-i18n="profile.totaldistance"></th><td id="profile-total-distance"></td></tr>
+    <tr><th data-i18n="profile.totaltime"></th><td id="profile-total-time"></td></tr>
+    <tr><th data-i18n="profile.avgdistance"></th><td id="profile-avg-distance"></td></tr>
+    <tr><th data-i18n="profile.avgpace"></th><td id="profile-avg-pace"></td></tr>
+    <tr><th data-i18n="profile.longest"></th><td id="profile-longest"></td></tr>
+    <tr><th data-i18n="profile.best100m"></th><td id="profile-100m"></td></tr>
+    <tr><th data-i18n="profile.best5k"></th><td id="profile-5k"></td></tr>
+  </table>
+</section>
+
+<!-- PART 2 SCRIPT WILL BE INSERTED BELOW -->
+<!-- ↓↓↓ ASK ME WHEN READY FOR PART 2 ↓↓↓ -->
+<!-- Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // ==========================
+  //  CONFIG
+  // ==========================
+
+  // TODO: replace this with YOUR Firebase config from the Firebase console
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY_HERE",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID"
+  };
+
+  const HITACHI_CODE = "27HG0QIBD2";
+  const LS_CODE_OK_KEY = "mih_hitachi_code_ok";
+  const LS_CURRENT_USER_KEY = "mih_current_user_id";
+  const LS_LANG_KEY = "mih_lang";
+
+  const LEAGUES = ["amateurs", "intermediates", "pros", "legends"];
+  const MIN_RUNS_FOR_PLACEMENT = 3;
+
+  let db = null;
+  let users = [];
+  let entries = [];
+  let currentUser = null;
+  let currentLang = "en";
+
+  // ==========================
+  //  TRANSLATIONS
+  // ==========================
+
+  const translations = {
+    en: {
+      // nav
+      "nav.welcome": "Welcome",
+      "nav.leaderboard": "Leaderboard",
+      "nav.stats": "Stats",
+      "nav.rules": "Rules & prizes",
+      "nav.about": "About",
+      "nav.login": "Login",
+
+      // welcome
+      "welcome.title": "Move more. Compete together.",
+      "welcome.subtitle": "Make It Happen is a health challenge for Hitachi Vantara. Walk, run or cycle, log your distance and climb the leagues.",
+      "welcome.cta": "Log in or create an account",
+
+      // login
+      "login.title": "Log in to Make It Happen",
+      "login.description": "Create a simple account so the site knows who you are and only you can manage your activities.",
+      "login.name": "Name",
+      "login.password": "Password",
+      "login.code": "Hitachi Vantara join code",
+      "login.submit": "Log in / Create account",
+      "login.note": "Only Hitachi Vantara members can join. Your account is stored in the shared database, not just on your device. If you do not use your account for a long time it may be cleaned up.",
+
+      // leagues
+      "league.amateurs": "Amateurs",
+      "league.intermediates": "Intermediates",
+      "league.pros": "Pros",
+      "league.legends": "Legends",
+      "league.pending": "Pending",
+
+      // leaderboard
+      "leaderboard.title": "Leaderboard",
+      "leaderboard.filter": "Filter by league:",
+      "leaderboard.all": "All leagues",
+      "leaderboard.none": "No activities yet. Be the first to log something.",
+      "lb.rank": "#",
+      "lb.name": "Name",
+      "lb.league": "League",
+      "lb.distance": "Total distance (km)",
+      "lb.time": "Total time (min)",
+
+      // stats
+      "stats.title": "Player stats and league moves",
+      "stats.runs": "Runs",
+      "stats.totaldistance": "Total distance (km)",
+      "stats.totaltime": "Total time (min)",
+      "stats.avgdistance": "Average distance (km)",
+      "stats.bestdistance": "Longest distance (km)",
+      "stats.improvement": "Improvement",
+      "stats.none": "Stats will appear once people start logging activities.",
+      "stats.promotions": "Apply promotions / relegations for this month",
+      "stats.placejoiners": "Place new joiners into leagues",
+
+      // rules
+      "rules.title": "Rules, leagues and prizes",
+      "rules.joiningtitle": "Joining and signing up",
+      "rules.joiningtext":
+        "Only Hitachi Vantara members can join, using the access code. You can sign up any time. When you create an account you start as “Pending”. You can log activities straight away. At the start of the next month, the organiser presses the button to place all pending players into the leagues based on their distance, time and speed.",
+      "rules.leaguetitle": "Leagues and balance",
+      "rules.leaguetext":
+        "There are four leagues: Amateurs, Intermediates, Pros and Legends. The system tries to keep league sizes balanced. When placing new joiners it avoids making one league much larger than the others, so that the difference between the biggest and smallest league stays small.",
+      "rules.promotiontitle": "Promotions and relegations",
+      "rules.promotiontext":
+        "Each month you can apply promotions and relegations from the Stats page. The number of players moved depends on how many people are active: with 8+ players there is 1 promotion and 1 relegation, with 16+ there are 2 of each, and with 32+ there are 3 of each. Rankings are based on total distance first, then total time, then average speed.",
+      "rules.prizetitle": "Prizes",
+      "rules.prizetext":
+        "Local teams can decide the exact prizes. A simple version is: a small prize for the monthly winner and a bigger prize at the end of the year for the player with the strongest overall performance.",
+
+      // about
+      "about.title": "About Make It Happen",
+      "about.text1":
+        "Make It Happen is a simple, fair health challenge for Hitachi Vantara. The goal is not to create elite athletes, but to give everyone a clear, friendly way to move more and see progress over time.",
+      "about.text2":
+        "You can walk, run or cycle and log your distance and time. The system looks at both how far you go and how long you spend moving. That means slower but very dedicated people still get rewarded, not only the fastest runners.",
+      "about.text3":
+        "New players sign up first, then officially join a league at the start of the next month. The site compares their first month to everyone else, then places them into the league that fits them best while keeping league sizes balanced.",
+
+      // entry
+      "entry.title": "Log a new activity",
+      "entry.distance": "Distance (km)",
+      "entry.time": "Time (minutes)",
+      "entry.submit": "Save my activity",
+      "entry.my": "My activities",
+      "entry.date": "Date",
+      "entry.actions": "Actions",
+      "entry.none": "You have no activities yet for this account.",
+
+      // profile
+      "profile.runs": "Runs",
+      "profile.totaldistance": "Total distance",
+      "profile.totaltime": "Total time",
+      "profile.avgdistance": "Average distance",
+      "profile.avgpace": "Average pace",
+      "profile.longest": "Longest activity",
+      "profile.best100m": "Fastest ~100 m",
+      "profile.best5k": "Fastest ~5 km",
+
+      // user header
+      "user.notLoggedIn": "Not logged in",
+      "user.loginButton": "Login",
+      "user.loggedInAs": "Logged in as {name}",
+      "user.leagueLabel": "League: {league}",
+      "user.addActivity": "Add activity",
+      "user.logout": "Log out",
+      "user.deleteAccount": "Delete account",
+
+      // alerts (main ones)
+      "alert.loginMissing": "Please enter both name and password.",
+      "alert.codeWrong": "The Hitachi code is wrong.",
+      "alert.passwordWrong": "Wrong password for this name.",
+      "alert.firebase": "Firebase is not configured yet. Please add your Firebase config in the script.",
+      "alert.mustLogin": "Please log in before adding activities.",
+      "alert.activityInvalid": "Please fill in distance and time correctly with positive values.",
+      "alert.noPlayers": "No players yet.",
+      "alert.notEnoughPlayers": "You need at least 8 players for promotions and relegations.",
+      "alert.promotionsDone": "Promotions and relegations applied: {up} up, {down} down.",
+      "alert.noActivitiesToPlace": "No activities yet, nothing to place.",
+      "alert.noPending": "No pending joiners ready to place. New sign-ups will join at the start of the next month.",
+      "alert.placeSummary": "Placed {placed} new joiner(s) into leagues. {skipped}",
+      "alert.placeSkipped": "{count} left pending (not enough data yet or for balance).",
+      "alert.deleteActivityConfirm": "Delete this activity?",
+      "alert.deleteAccountConfirm": "This will delete your account and all your activities. Are you sure?"
+    },
+
+    da: {
+      "nav.welcome": "Velkomst",
+      "nav.leaderboard": "Rangliste",
+      "nav.stats": "Statistik",
+      "nav.rules": "Regler og præmier",
+      "nav.about": "Om projektet",
+      "nav.login": "Log ind",
+
+      "welcome.title": "Bevæg dig mere. Konkurrér sammen.",
+      "welcome.subtitle": "Make It Happen er en sundhedsudfordring for Hitachi Vantara. Gå, løb eller cykl, registrér din distance og ryk op gennem ligaerne.",
+      "welcome.cta": "Log ind eller opret konto",
+
+      "login.title": "Log ind på Make It Happen",
+      "login.description": "Lav en enkel konto, så siden ved, hvem du er, og kun du kan styre dine aktiviteter.",
+      "login.name": "Navn",
+      "login.password": "Adgangskode",
+      "login.code": "Hitachi Vantara adgangskode",
+      "login.submit": "Log ind / Opret konto",
+      "login.note": "Kun medarbejdere i Hitachi Vantara kan deltage, med adgangskoden. Din konto ligger i en delt database, ikke kun på din egen enhed. Hvis du ikke bruger din konto i lang tid, kan den blive ryddet op.",
+
+      "league.amateurs": "Amatører",
+      "league.intermediates": "Øvede",
+      "league.pros": "Prof",
+      "league.legends": "Legender",
+      "league.pending": "Afventer",
+
+      "leaderboard.title": "Rangliste",
+      "leaderboard.filter": "Filtrér efter liga:",
+      "leaderboard.all": "Alle ligaer",
+      "leaderboard.none": "Ingen aktiviteter endnu. Vær den første til at logge noget.",
+      "lb.rank": "#",
+      "lb.name": "Navn",
+      "lb.league": "Liga",
+      "lb.distance": "Samlet distance (km)",
+      "lb.time": "Samlet tid (min)",
+
+      "stats.title": "Spillerstatistik og ligaflytninger",
+      "stats.runs": "Ture",
+      "stats.totaldistance": "Samlet distance (km)",
+      "stats.totaltime": "Samlet tid (min)",
+      "stats.avgdistance": "Gennemsnitlig distance (km)",
+      "stats.bestdistance": "Længste tur (km)",
+      "stats.improvement": "Forbedring",
+      "stats.none": "Statistik vises, når deltagerne begynder at logge aktiviteter.",
+      "stats.promotions": "Udfør oprykning og nedrykning for denne måned",
+      "stats.placejoiners": "Placér nye deltagere i ligaer",
+
+      "rules.title": "Regler, ligaer og præmier",
+      "rules.joiningtitle": "Tilmelding og opstart",
+      "rules.joiningtext":
+        "Kun medarbejdere i Hitachi Vantara kan deltage, ved hjælp af adgangskoden. Du kan tilmelde dig når som helst. Når du opretter en konto, starter du som “Afventer”. Du kan logge aktiviteter med det samme. Ved starten af næste måned trykker tovholderen på knappen, som placerer alle afventende spillere i ligaerne ud fra deres distance, tid og hastighed.",
+      "rules.leaguetitle": "Ligaer og balance",
+      "rules.leaguetext":
+        "Der er fire ligaer: Amatører, Øvede, Prof og Legender. Systemet forsøger at holde ligastørrelserne nogenlunde i balance. Når nye deltagere placeres, undgår det at gøre én liga meget større end de andre, så forskellen mellem den største og mindste liga forbliver lille.",
+      "rules.promotiontitle": "Oprykning og nedrykning",
+      "rules.promotiontext":
+        "Hver måned kan du udføre oprykning og nedrykning fra Statistik-siden. Antallet af spillere der flyttes, afhænger af hvor mange der er aktive: ved 8+ spillere er der 1 oprykning og 1 nedrykning, ved 16+ er der 2 af hver, og ved 32+ er der 3 af hver. Ranglisten bygger først på samlet distance, derefter samlet tid, og til sidst gennemsnitlig hastighed.",
+      "rules.prizetitle": "Præmier",
+      "rules.prizetext":
+        "De lokale teams beslutter præmierne. En enkel model er: en lille præmie til den månedlige vinder og en større præmie ved årets slutning til den spiller, der samlet set har klaret sig bedst.",
+
+      "about.title": "Om Make It Happen",
+      "about.text1":
+        "Make It Happen er en enkel, fair sundhedsudfordring for Hitachi Vantara. Målet er ikke at skabe elitesportsfolk, men at give alle en klar og venlig måde at bevæge sig mere og se deres udvikling over tid.",
+      "about.text2":
+        "Du kan gå, løbe eller cykle og registrere din distance og tid. Systemet kigger både på hvor langt du kommer, og hvor længe du er i bevægelse. Det betyder, at langsommere men meget dedikerede deltagere også bliver belønnet, ikke kun de hurtigste løbere.",
+      "about.text3":
+        "Nye spillere tilmelder sig først og træder officielt ind i en liga ved starten af næste måned. Siden sammenligner deres første måned med resten af feltet og placerer dem i den liga, der passer bedst, samtidig med at ligastørrelserne holdes i balance.",
+
+      "entry.title": "Registrér en ny aktivitet",
+      "entry.distance": "Distance (km)",
+      "entry.time": "Tid (minutter)",
+      "entry.submit": "Gem min aktivitet",
+      "entry.my": "Mine aktiviteter",
+      "entry.date": "Dato",
+      "entry.actions": "Handlinger",
+      "entry.none": "Du har ingen aktiviteter endnu på denne konto.",
+
+      "profile.runs": "Ture",
+      "profile.totaldistance": "Samlet distance",
+      "profile.totaltime": "Samlet tid",
+      "profile.avgdistance": "Gennemsnitlig distance",
+      "profile.avgpace": "Gennemsnitstempo",
+      "profile.longest": "Længste aktivitet",
+      "profile.best100m": "Hurtigste ~100 m",
+      "profile.best5k": "Hurtigste ~5 km",
+
+      "user.notLoggedIn": "Ikke logget ind",
+      "user.loginButton": "Log ind",
+      "user.loggedInAs": "Logget ind som {name}",
+      "user.leagueLabel": "Liga: {league}",
+      "user.addActivity": "Tilføj aktivitet",
+      "user.logout": "Log ud",
+      "user.deleteAccount": "Slet konto",
+
+      "alert.loginMissing": "Indtast både navn og adgangskode.",
+      "alert.codeWrong": "Hitachi-adgangskoden er forkert.",
+      "alert.passwordWrong": "Forkert adgangskode til dette navn.",
+      "alert.firebase": "Firebase er ikke sat korrekt op. Indsæt din Firebase-konfiguration i scriptet.",
+      "alert.mustLogin": "Log ind, før du tilføjer aktiviteter.",
+      "alert.activityInvalid": "Udfyld distance og tid korrekt med positive værdier.",
+      "alert.noPlayers": "Ingen spillere endnu.",
+      "alert.notEnoughPlayers": "Du skal bruge mindst 8 spillere til oprykning og nedrykning.",
+      "alert.promotionsDone": "Oprykning og nedrykning udført: {up} op, {down} ned.",
+      "alert.noActivitiesToPlace": "Ingen aktiviteter endnu, intet at placere.",
+      "alert.noPending": "Ingen afventende deltagere klar til placering. Nye tilmeldinger kommer med ved starten af næste måned.",
+      "alert.placeSummary": "Placerede {placed} ny(e) deltager(e) i ligaer. {skipped}",
+      "alert.placeSkipped": "{count} blev efterladt som Afventer (mangler data eller for balance).",
+      "alert.deleteActivityConfirm": "Slet denne aktivitet?",
+      "alert.deleteAccountConfirm": "Dette sletter din konto og alle dine aktiviteter. Er du sikker?"
+    },
+
+    ja: {
+      "nav.welcome": "ようこそ",
+      "nav.leaderboard": "ランキング",
+      "nav.stats": "統計",
+      "nav.rules": "ルールと賞品",
+      "nav.about": "このプロジェクトについて",
+      "nav.login": "ログイン",
+
+      "welcome.title": "もっと動く。みんなで競う。",
+      "welcome.subtitle": "「Make It Happen」は Hitachi Vantara のためのヘルスチャレンジです。歩く・走る・自転車で移動した距離を記録して、リーグの中で順位を上げていきます。",
+      "welcome.cta": "ログインまたはアカウント作成",
+
+      "login.title": "Make It Happen にログイン",
+      "login.description": "シンプルなアカウントを作ることで、自分のアクティビティだけを管理できるようになります。",
+      "login.name": "名前",
+      "login.password": "パスワード",
+      "login.code": "Hitachi Vantara 参加コード",
+      "login.submit": "ログイン / アカウント作成",
+      "login.note": "参加できるのは Hitachi Vantara のメンバーのみで、コード が必要です。アカウントは自分の端末だけでなく、共有データベースに保存されます。長期間まったく利用されないアカウントは整理される場合があります。",
+
+      "league.amateurs": "アマチュア",
+      "league.intermediates": "ミドル",
+      "league.pros": "プロ",
+      "league.legends": "レジェンド",
+      "league.pending": "保留",
+
+      "leaderboard.title": "ランキング",
+      "leaderboard.filter": "リーグで絞り込み：",
+      "leaderboard.all": "すべてのリーグ",
+      "leaderboard.none": "まだアクティビティがありません。最初の記録者になりましょう。",
+      "lb.rank": "順位",
+      "lb.name": "名前",
+      "lb.league": "リーグ",
+      "lb.distance": "総距離（km）",
+      "lb.time": "総時間（分）",
+
+      "stats.title": "プレイヤー統計とリーグ昇降格",
+      "stats.runs": "回数",
+      "stats.totaldistance": "総距離（km）",
+      "stats.totaltime": "総時間（分）",
+      "stats.avgdistance": "平均距離（km）",
+      "stats.bestdistance": "最長距離（km）",
+      "stats.improvement": "改善度",
+      "stats.none": "参加者がアクティビティを記録すると統計が表示されます。",
+      "stats.promotions": "今月の昇格 / 降格を実行",
+      "stats.placejoiners": "新規参加者をリーグに割り当て",
+
+      "rules.title": "ルール・リーグ・賞品について",
+      "rules.joiningtitle": "参加方法とスタート",
+      "rules.joiningtext":
+        "参加できるのは Hitachi Vantara のメンバーのみで、アクセスコード が必要です。いつでもサインアップできます。アカウントを作成すると、最初は「保留」状態になりますが、すぐにアクティビティを記録できます。翌月の初めに、担当者がボタンを押すと、保留中のプレイヤーが距離・時間・スピードに基づいて各リーグに自動的に割り当てられます。",
+      "rules.leaguetitle": "リーグとバランス",
+      "rules.leaguetext":
+        "リーグは4つあります：アマチュア、ミドル、プロ、レジェンド。システムはリーグごとの人数バランスを保つようにします。新規参加者を配置するとき、一部のリーグだけ極端に人数が多くならないよう調整します。",
+      "rules.promotiontitle": "昇格と降格",
+      "rules.promotiontext":
+        "毎月、統計ページから昇格と降格を実行できます。移動人数はアクティブなプレイヤー数によって決まります：8人以上で1人昇格＋1人降格、16人以上で2人、32人以上で3人です。ランキングは総距離を最優先し、その次に総時間、最後に平均スピードを使って決められます。",
+      "rules.prizetitle": "賞品",
+      "rules.prizetext":
+        "具体的な賞品内容は各ローカルチームが決められます。シンプルな例としては、毎月のトッププレイヤーに小さな賞品を、年間で最も活躍したプレイヤーにより大きな賞品を用意する、などがあります。",
+
+      "about.title": "Make It Happen とは",
+      "about.text1":
+        "Make It Happen は Hitachi Vantara のためのシンプルで公平なヘルスチャレンジです。目的はエリートアスリートをつくることではなく、誰もがもっと動き、自分の変化をわかりやすく実感できる場をつくることです。",
+      "about.text2":
+        "歩く・走る・自転車など、好きな移動方法で距離と時間を記録できます。システムは「どれくらい速いか」だけでなく、「どれだけ長く動いたか」も評価します。つまり、スピードよりも継続して頑張る人もしっかり評価されます。",
+      "about.text3":
+        "新しい参加者はまずサインアップし、翌月のスタート時に正式にどこかのリーグへ入ります。サイトはその最初の1カ月を他の参加者と比較し、その人に合ったリーグに割り当てます。同時に、リーグごとの人数バランスも保つようにしています。",
+
+      "entry.title": "新しいアクティビティを記録",
+      "entry.distance": "距離（km）",
+      "entry.time": "時間（分）",
+      "entry.submit": "アクティビティを保存",
+      "entry.my": "自分のアクティビティ",
+      "entry.date": "日付",
+      "entry.actions": "操作",
+      "entry.none": "このアカウントでは、まだアクティビティが記録されていません。",
+
+      "profile.runs": "回数",
+      "profile.totaldistance": "総距離",
+      "profile.totaltime": "総時間",
+      "profile.avgdistance": "平均距離",
+      "profile.avgpace": "平均ペース",
+      "profile.longest": "最長アクティビティ",
+      "profile.best100m": "最速 約100 m",
+      "profile.best5k": "最速 約5 km",
+
+      "user.notLoggedIn": "未ログイン",
+      "user.loginButton": "ログイン",
+      "user.loggedInAs": "{name} としてログイン中",
+      "user.leagueLabel": "リーグ：{league}",
+      "user.addActivity": "アクティビティを追加",
+      "user.logout": "ログアウト",
+      "user.deleteAccount": "アカウント削除",
+
+      "alert.loginMissing": "名前とパスワードを入力してください。",
+      "alert.codeWrong": "Hitachi の参加コードが正しくありません。",
+      "alert.passwordWrong": "この名前のパスワードが違います。",
+      "alert.firebase": "Firebase がまだ正しく設定されていません。スクリプト内に Firebase 設定を追加してください。",
+      "alert.mustLogin": "アクティビティを追加する前にログインしてください。",
+      "alert.activityInvalid": "距離と時間を正しく、正の数で入力してください。",
+      "alert.noPlayers": "まだプレイヤーがいません。",
+      "alert.notEnoughPlayers": "昇格・降格には最低 8 人のプレイヤーが必要です。",
+      "alert.promotionsDone": "昇格と降格を実行しました：{up} 人昇格、{down} 人降格。",
+      "alert.noActivitiesToPlace": "まだアクティビティがないため、配置するものがありません。",
+      "alert.noPending": "リーグに配置できる保留中プレイヤーはいません。新規参加者は翌月の開始時にリーグに入ります。",
+      "alert.placeSummary": "{placed} 人の新規参加者をリーグに配置しました。{skipped}",
+      "alert.placeSkipped": "{count} 人は保留のままです（データ不足またはバランス調整のため）。",
+      "alert.deleteActivityConfirm": "このアクティビティを削除しますか？",
+      "alert.deleteAccountConfirm": "アカウントとすべてのアクティビティを削除します。本当に続けますか？"
+    }
+  };
+
+  function t(key, vars) {
+    const dict = translations[currentLang] || translations.en;
+    let str = dict[key] || translations.en[key] || key;
+    if (vars) {
+      Object.keys(vars).forEach(k => {
+        str = str.replace(`{${k}}`, vars[k]);
+      });
+    }
+    return str;
+  }
+
+  function applyTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
+    });
+    renderHeaderUser(); // update header text in new language
+  }
+
+  function initLanguage() {
+    const select = document.getElementById("lang-select");
+    const saved = localStorage.getItem(LS_LANG_KEY) || "en";
+    currentLang = saved;
+    if (select) {
+      select.value = saved;
+      select.addEventListener("change", () => {
+        currentLang = select.value;
+        localStorage.setItem(LS_LANG_KEY, currentLang);
+        applyTranslations();
+      });
+    }
+    applyTranslations();
+  }
+
+  // ==========================
+  //  BASIC HELPERS
+  // ==========================
+
+  function currentMonthKey(ts) {
+    const d = ts ? new Date(ts) : new Date();
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    return `${y}-${String(m).padStart(2, "0")}`;
+  }
+
+  function formatDate(ts) {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString();
+  }
+
+  function formatMinutesPretty(minutes) {
+    if (!isFinite(minutes) || minutes <= 0) return "0:00";
+    const totalSeconds = Math.round(minutes * 60);
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+
+  function formatSecondsPretty(seconds) {
+    if (!isFinite(seconds) || seconds <= 0) return "–";
+    return `${seconds.toFixed(1)} s`;
+  }
+
+  function leagueIndex(league) {
+    return LEAGUES.indexOf(league);
+  }
+
+  function formatImprovement(value) {
+    if (!isFinite(value) || value === 0) return "0%";
+    const rounded = Math.round(value);
+    return (rounded > 0 ? "+" : "") + rounded + "%";
+  }
+
+  function getLeagueCounts() {
+    const counts = { amateurs: 0, intermediates: 0, pros: 0, legends: 0 };
+    users.forEach(u => {
+      if (counts[u.league] !== undefined) counts[u.league]++;
+    });
+    return counts;
+  }
+
+  function canMoveLeague(user, targetLeague) {
+    if (!LEAGUES.includes(targetLeague)) return false;
+    const counts = getLeagueCounts();
+    const from = LEAGUES.includes(user.league) ? user.league : null;
+
+    if (from && counts[from] !== undefined) {
+      counts[from] = Math.max(0, counts[from] - 1);
+    }
+    counts[targetLeague] = (counts[targetLeague] || 0) + 1;
+
+    const values = Object.values(counts);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    return max - min <= 2;
+  }
+
+  // ==========================
+  //  NAVIGATION
+  // ==========================
+
+  function showScene(name) {
+    const scenes = document.querySelectorAll(".scene");
+    scenes.forEach(scene => {
+      scene.classList.remove("active");
+      scene.style.display = "none";
+    });
+
+    const el =
+      document.getElementById("scene-" + name) ||
+      document.getElementById(name);
+
+    if (el) {
+      el.classList.add("active");
+      el.style.display = "block";
     }
 
-    window.addEventListener("resize", detectDevice);
-
-    // ========= UTILITIES =========
-    function generateId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    }
-
-    function saveEntries() {
-      localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(entries));
-    }
-
-    function saveUsers() {
-      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-    }
-
-    function loadEntries() {
-      const saved = localStorage.getItem(STORAGE_KEY_ENTRIES);
-      if (saved) {
-        try {
-          entries = JSON.parse(saved) || [];
-        } catch (e) {
-          entries = [];
-        }
-      } else {
-        entries = [];
+    const navButtons = document.querySelectorAll("header nav button");
+    navButtons.forEach(btn => btn.classList.remove("active"));
+    navButtons.forEach(btn => {
+      const onclick = btn.getAttribute("onclick") || "";
+      if (onclick.includes("'" + name + "'")) {
+        btn.classList.add("active");
       }
+    });
+  }
+
+  // ==========================
+  //  FIREBASE INIT
+  // ==========================
+
+  function initFirebase() {
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+    } catch (e) {
+      console.error("Firebase init error:", e);
+      alert(t("alert.firebase"));
     }
+  }
 
-    function loadUsers() {
-      const saved = localStorage.getItem(STORAGE_KEY_USERS);
-      if (saved) {
-        try {
-          users = JSON.parse(saved) || [];
-        } catch (e) {
-          users = [];
-        }
-      } else {
-        users = [];
-      }
-      users.forEach((u) => {
-        if (!u.league || !LEAGUES.includes(u.league)) {
-          u.league = "amateurs";
-        }
-      });
-      saveUsers();
+  // ==========================
+  //  DATA LOADING
+  // ==========================
+
+  async function loadAllData() {
+    if (!db) return;
+    const [usersSnap, actsSnap] = await Promise.all([
+      db.collection("users").get(),
+      db.collection("activities").get()
+    ]);
+
+    users = usersSnap.docs.map(doc => {
+      const data = doc.data();
+      if (!data.league) data.league = "pending";
+      if (!data.joinMonth) data.joinMonth = currentMonthKey(data.createdAt || Date.now());
+      return { id: doc.id, ...data };
+    });
+
+    entries = actsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    renderLeaderboard();
+    renderStats();
+    renderMyActivities();
+  }
+
+  function restoreCurrentUser() {
+    const storedId = localStorage.getItem(LS_CURRENT_USER_KEY);
+    if (!storedId) {
+      currentUser = null;
+      renderHeaderUser();
+      updateEntryFormLockState();
+      return;
     }
-
-    function getUserById(id) {
-      return users.find((u) => u.id === id) || null;
+    const found = users.find(u => u.id === storedId);
+    if (found) {
+      currentUser = found;
+    } else {
+      localStorage.removeItem(LS_CURRENT_USER_KEY);
+      currentUser = null;
     }
+    renderHeaderUser();
+    updateEntryFormLockState();
+  }
 
-    function getUserByName(name) {
-      return users.find((u) => u.name.toLowerCase() === name.toLowerCase()) || null;
-    }
+  // ==========================
+  //  PLAYER STATS
+  // ==========================
 
-    function formatImprovement(value) {
-      if (!isFinite(value) || value === 0) return "0%";
-      const rounded = Math.round(value);
-      return (rounded > 0 ? "+" : "") + rounded + "%";
-    }
+  function getPlayerStats() {
+    const byUser = {};
 
-    function formatDate(ts) {
-      const d = new Date(ts);
-      if (isNaN(d.getTime())) return "";
-      return d.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-      });
-    }
-
-    function leagueIndex(league) {
-      return LEAGUES.indexOf(league);
-    }
-
-    function assignStartingLeague() {
-      const counts = {
-        amateurs: 0,
-        intermediates: 0,
-        pros: 0,
-        legends: 0
-      };
-      users.forEach((u) => {
-        if (u.league && counts.hasOwnProperty(u.league)) {
-          counts[u.league]++;
-        }
-      });
-
-      const values = Object.values(counts);
-      const minCount = Math.min(...values);
-      const candidateLeagues = LEAGUES.filter((l) => counts[l] === minCount);
-      return candidateLeagues[0] || "amateurs";
-    }
-
-    // ========= CLEANUP OLD ACCOUNTS =========
-    function cleanupOldAccounts() {
-      const now = Date.now();
-      const currentUserId = localStorage.getItem(STORAGE_KEY_CURRENT_USER);
-
-      const keptUsers = [];
-      const removedUserIds = new Set();
-
-      users.forEach((user) => {
-        const isCurrent = currentUserId && user.id === currentUserId;
-        if (!user.lastLogoutAt || isCurrent) {
-          keptUsers.push(user);
-          return;
-        }
-        const delta = now - user.lastLogoutAt;
-        if (delta > THIRTY_DAYS_MS) {
-          removedUserIds.add(user.id);
-        } else {
-          keptUsers.push(user);
-        }
-      });
-
-      users = keptUsers;
-
-      if (removedUserIds.size > 0) {
-        entries = entries.filter((e) => !removedUserIds.has(e.userId));
-      }
-
-      saveUsers();
-      saveEntries();
-    }
-
-    // ========= NAVIGATION =========
-    function showScene(name) {
-      const scenes = document.querySelectorAll(".scene");
-      scenes.forEach((scene) => scene.classList.remove("active"));
-
-      const target = document.getElementById("scene-" + name);
-      if (target) target.classList.add("active");
-
-      const navButtons = document.querySelectorAll("header nav button");
-      navButtons.forEach((btn) => btn.classList.remove("active"));
-      navButtons.forEach((btn) => {
-        if (
-          btn.getAttribute("onclick") === `showScene('${name}')` ||
-          btn.getAttribute("onclick") === `requireLoginThenShow('${name}')`
-        ) {
-          btn.classList.add("active");
-        }
-      });
-
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    }
-
-    function requireLoginThenShow(name) {
-      if (!currentUser) {
-        alert("Please log in first.");
-        showScene("login");
-        return;
-      }
-      showScene(name);
-    }
-
-    // ========= PLAYER STATS & LEAGUES =========
-    function getPlayerStats() {
-      const byUser = {};
-
-      // start with all users so they appear even with 0 runs
-      users.forEach((user) => {
-        byUser[user.id] = {
+    entries.forEach(e => {
+      const user = users.find(u => u.id === e.userId);
+      if (!user) return;
+      const key = user.id;
+      if (!byUser[key]) {
+        byUser[key] = {
           userId: user.id,
           name: user.name,
-          league: user.league || "amateurs",
+          league: user.league || "pending",
           runs: 0,
           totalDistance: 0,
           totalTime: 0,
           bestDistance: 0,
-          baselineDistance: null
+          firstEntry: null
         };
-      });
+      }
+      const stats = byUser[key];
 
-      entries.forEach((e) => {
-        const user = getUserById(e.userId);
-        if (!user) return;
-        const key = user.id;
-        const stats = byUser[key];
-        if (stats.baselineDistance === null) {
-          stats.baselineDistance = e.distanceKm;
+      if (!stats.firstEntry || e.timestamp < stats.firstEntry.timestamp) {
+        stats.firstEntry = {
+          distanceKm: e.distanceKm,
+          timeMinutes: e.timeMinutes,
+          timestamp: e.timestamp
+        };
+      }
+
+      stats.runs++;
+      stats.totalDistance += e.distanceKm;
+      stats.totalTime += e.timeMinutes;
+      if (e.distanceKm > stats.bestDistance) stats.bestDistance = e.distanceKm;
+    });
+
+    let players = Object.values(byUser);
+
+    players.forEach(p => {
+      p.avgDistance = p.runs > 0 ? p.totalDistance / p.runs : 0;
+      p.speed = p.totalTime > 0 ? p.totalDistance / p.totalTime : 0; // km per minute
+      let improvement = 0;
+      if (
+        p.firstEntry &&
+        p.firstEntry.distanceKm > 0 &&
+        p.firstEntry.timeMinutes > 0 &&
+        p.totalDistance > 0 &&
+        p.totalTime > 0
+      ) {
+        const baselinePace = p.firstEntry.timeMinutes / p.firstEntry.distanceKm; // min/km
+        const avgPace = p.totalTime / p.totalDistance; // min/km
+        if (baselinePace > 0) {
+          improvement = ((baselinePace - avgPace) / baselinePace) * 100;
         }
-        stats.runs += 1;
-        stats.totalDistance += e.distanceKm;
-        stats.totalTime += e.timeMinutes;
-        if (e.distanceKm > stats.bestDistance) {
-          stats.bestDistance = e.distanceKm;
-        }
-      });
+      }
+      p.improvement = improvement;
+    });
 
-      let players = Object.values(byUser);
+    // sort by distance, then time, then speed
+    players.sort((a, b) => {
+      if (b.totalDistance !== a.totalDistance) {
+        return b.totalDistance - a.totalDistance;
+      }
+      if (b.totalTime !== a.totalTime) {
+        return b.totalTime - a.totalTime;
+      }
+      return b.speed - a.speed;
+    });
 
-      // Extra stats and ranking metrics
-      players.forEach((p) => {
-        p.avgDistance = p.runs > 0 ? p.totalDistance / p.runs : 0;
-        p.speed = p.totalTime > 0 ? p.totalDistance / p.totalTime : 0; // km per minute
-        let improvement = 0;
-        if (p.baselineDistance && p.baselineDistance > 0 && p.runs > 1) {
-          improvement = ((p.avgDistance - p.baselineDistance) / p.baselineDistance) * 100;
-        }
-        p.improvement = improvement;
-      });
+    players = players.map((p, index) => ({ ...p, rank: index + 1 }));
+    return players;
+  }
 
-      // Sort by distance, then speed, then time
-      players.sort((a, b) => {
-        if (b.totalDistance !== a.totalDistance) {
-          return b.totalDistance - a.totalDistance;
-        }
-        if (b.speed !== a.speed) {
-          return b.speed - a.speed;
-        }
-        return a.totalTime - b.totalTime;
-      });
+  // ==========================
+  //  MONTHLY: PLACE NEW JOINERS
+  // ==========================
 
-      players = players.map((p, index) => ({
-        ...p,
-        rank: index + 1
-      }));
+  async function placeNewJoiners() {
+    if (!db) return;
 
-      return players;
+    const players = getPlayerStats();
+    if (!players.length) {
+      alert(t("alert.noActivitiesToPlace"));
+      return;
     }
 
-    // ========= PROMOTIONS & RELEGATIONS =========
-    function applyPromotions() {
-      const players = getPlayerStats();
-      const total = players.length;
-      if (total === 0) {
-        alert("No players yet.");
-        return;
-      }
+    const nowKey = currentMonthKey();
+    const rankMap = {};
+    players.forEach(p => { rankMap[p.userId] = p; });
 
-      let moves = 0;
-      if (total >= 32) moves = 3;
-      else if (total >= 16) moves = 2;
-      else if (total >= 8) moves = 1;
-      else moves = 0;
+    const candidates = users.filter(u =>
+      u.league === "pending" &&
+      u.joinMonth &&
+      u.joinMonth < nowKey
+    );
 
-      if (moves === 0) {
-        alert("Not enough players yet. You need at least 8 players for promotions and relegations.");
-        return;
-      }
-
-      // Promote from top
-      let promoted = 0;
-      for (let i = 0; i < players.length && promoted < moves; i++) {
-        const p = players[i];
-        const idx = leagueIndex(p.league);
-        if (idx < 0 || idx >= LEAGUES.length - 1) continue;
-        const user = getUserById(p.userId);
-        if (!user) continue;
-        user.league = LEAGUES[idx + 1];
-        promoted++;
-      }
-
-      // Relegate from bottom
-      let relegated = 0;
-      for (let i = players.length - 1; i >= 0 && relegated < moves; i--) {
-        const p = players[i];
-        const idx = leagueIndex(p.league);
-        if (idx <= 0) continue;
-        const user = getUserById(p.userId);
-        if (!user) continue;
-        user.league = LEAGUES[idx - 1];
-        relegated++;
-      }
-
-      saveUsers();
-      renderHeaderUser();
-      renderLeaderboard();
-      renderStats();
-      alert(`Promotions and relegations applied: ${moves} up, ${moves} down.`);
+    if (!candidates.length) {
+      alert(t("alert.noPending"));
+      return;
     }
 
-    // ========= RENDER UI =========
-    function renderHeaderUser() {
-      const el = document.getElementById("user-controls");
-      const nameInput = document.getElementById("name");
+    const batch = db.batch();
+    let placed = 0;
+    let skipped = 0;
 
-      if (!el) return;
+    function preferredLeaguesForTarget(target) {
+      if (target === "legends") return ["legends", "pros"];
+      if (target === "pros") return ["pros", "intermediates", "legends"];
+      if (target === "intermediates") return ["intermediates", "amateurs", "pros"];
+      if (target === "amateurs") return ["amateurs", "intermediates"];
+      return ["amateurs"];
+    }
 
-      el.innerHTML = "";
-      if (!currentUser) {
-        const statusSpan = document.createElement("span");
-        statusSpan.id = "user-status";
-        statusSpan.textContent = "Not logged in";
-        el.appendChild(statusSpan);
+    candidates.forEach(user => {
+      const stats = rankMap[user.id];
+      if (!stats || stats.runs < MIN_RUNS_FOR_PLACEMENT) {
+        skipped++;
+        return;
+      }
 
-        const btn = document.createElement("button");
-        btn.className = "btn-small";
-        btn.textContent = "Log in";
-        btn.onclick = () => showScene("login");
-        el.appendChild(btn);
+      const N = players.length;
+      const q = stats.rank / N;
+      let targetLeague = "amateurs";
+      if (q <= 0.25) targetLeague = "legends";
+      else if (q <= 0.5) targetLeague = "pros";
+      else if (q <= 0.75) targetLeague = "intermediates";
+      else targetLeague = "amateurs";
 
-        if (nameInput) {
-          nameInput.value = "";
-          nameInput.placeholder = "Log in to set your name";
+      const prefs = preferredLeaguesForTarget(targetLeague);
+      let finalLeague = null;
+
+      for (const lg of prefs) {
+        if (canMoveLeague(user, lg)) {
+          finalLeague = lg;
+          break;
         }
+      }
+
+      if (!finalLeague) {
+        skipped++;
         return;
       }
 
-      const statusSpan = document.createElement("span");
-      statusSpan.id = "user-status";
-      statusSpan.innerHTML =
-        `Logged in as <span class="user-name">${currentUser.name}</span> · ` +
-        `<span class="badge-league ${currentUser.league}">` +
-        `${currentUser.league.charAt(0).toUpperCase() + currentUser.league.slice(1)}</span>`;
-      el.appendChild(statusSpan);
+      user.league = finalLeague;
+      const userRef = db.collection("users").doc(user.id);
+      batch.update(userRef, { league: finalLeague });
+      placed++;
+    });
 
-      const logoutBtn = document.createElement("button");
-      logoutBtn.className = "btn-small";
-      logoutBtn.textContent = "Log out";
-      logoutBtn.onclick = logout;
-      el.appendChild(logoutBtn);
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "btn-small danger";
-      deleteBtn.textContent = "Delete account";
-      deleteBtn.onclick = deleteAccount;
-      el.appendChild(deleteBtn);
-
-      if (nameInput) {
-        nameInput.value = currentUser.name;
-        nameInput.placeholder = "";
-      }
+    if (!placed) {
+      alert("No new joiners could be placed yet. They may need more activities or the leagues are already very balanced.");
+      return;
     }
 
-    function renderLeaderboard() {
-      const tbody = document.getElementById("leaderboard-body");
-      const empty = document.getElementById("no-entries");
-      if (!tbody) return;
+    await batch.commit();
+    await loadAllData();
+    restoreCurrentUser();
 
-      tbody.innerHTML = "";
-      const players = getPlayerStats();
-      const filter = document.getElementById("league-filter")?.value || "all";
+    let skippedText = "";
+    if (skipped > 0) {
+      skippedText = t("alert.placeSkipped", { count: skipped });
+    }
+    alert(t("alert.placeSummary", { placed, skipped: skippedText }));
+  }
 
-      let filtered = players;
-      if (filter !== "all") {
-        filtered = players.filter((p) => p.league === filter);
+  // ==========================
+  //  MONTHLY: PROMOTIONS
+  // ==========================
+
+  async function applyPromotions() {
+    if (!db) return;
+
+    const players = getPlayerStats();
+    const total = players.length;
+    if (total === 0) {
+      alert(t("alert.noPlayers"));
+      return;
+    }
+
+    let moves = 0;
+    if (total >= 32) moves = 3;
+    else if (total >= 16) moves = 2;
+    else if (total >= 8) moves = 1;
+    else moves = 0;
+
+    if (moves === 0) {
+      alert(t("alert.notEnoughPlayers"));
+      return;
+    }
+
+    const batch = db.batch();
+
+    // promotions
+    let promoted = 0;
+    for (let i = 0; i < players.length && promoted < moves; i++) {
+      const p = players[i];
+      if (!LEAGUES.includes(p.league)) continue;
+      const idx = leagueIndex(p.league);
+      if (idx < 0 || idx >= LEAGUES.length - 1) continue;
+      const userRef = db.collection("users").doc(p.userId);
+      batch.update(userRef, { league: LEAGUES[idx + 1] });
+      promoted++;
+    }
+
+    // relegations
+    let relegated = 0;
+    for (let i = players.length - 1; i >= 0 && relegated < moves; i--) {
+      const p = players[i];
+      if (!LEAGUES.includes(p.league)) continue;
+      const idx = leagueIndex(p.league);
+      if (idx <= 0) continue;
+      const userRef = db.collection("users").doc(p.userId);
+      batch.update(userRef, { league: LEAGUES[idx - 1] });
+      relegated++;
+    }
+
+    await batch.commit();
+    await loadAllData();
+    restoreCurrentUser();
+    alert(t("alert.promotionsDone", { up: moves, down: moves }));
+  }
+
+  // ==========================
+  //  PROFILE VIEW
+  // ==========================
+
+  function showProfile(userId) {
+    const card = document.getElementById("profile-card");
+    const title = document.getElementById("profile-title");
+    const summary = document.getElementById("profile-summary");
+
+    const runsCell = document.getElementById("profile-runs");
+    const totalDistCell = document.getElementById("profile-total-distance");
+    const totalTimeCell = document.getElementById("profile-total-time");
+    const avgDistCell = document.getElementById("profile-avg-distance");
+    const avgPaceCell = document.getElementById("profile-avg-pace");
+    const longestCell = document.getElementById("profile-longest");
+    const best100mCell = document.getElementById("profile-100m");
+    const best5kCell = document.getElementById("profile-5k");
+
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    const myEntries = entries
+      .filter(e => e.userId === userId)
+      .slice()
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+    if (!myEntries.length) {
+      title.textContent = `Profile: ${user.name}`;
+      summary.textContent = "No activities logged yet.";
+      runsCell.textContent = "0";
+      totalDistCell.textContent = "0 km";
+      totalTimeCell.textContent = "0";
+      avgDistCell.textContent = "–";
+      avgPaceCell.textContent = "–";
+      longestCell.textContent = "–";
+      best100mCell.textContent = "–";
+      best5kCell.textContent = "–";
+      showScene("profile-card");
+      return;
+    }
+
+    let runs = myEntries.length;
+    let totalDistance = 0;
+    let totalTime = 0;
+    let longest = 0;
+    let best100mSeconds = Infinity;
+    let best5kMinutes = Infinity;
+
+    myEntries.forEach(e => {
+      totalDistance += e.distanceKm;
+      totalTime += e.timeMinutes;
+      if (e.distanceKm > longest) longest = e.distanceKm;
+
+      if (e.distanceKm > 0 && e.timeMinutes > 0) {
+        const paceMinutesPerKm = e.timeMinutes / e.distanceKm;
+        const hundredSeconds = paceMinutesPerKm * 0.1 * 60;
+        if (hundredSeconds < best100mSeconds) best100mSeconds = hundredSeconds;
+
+        if (e.distanceKm >= 4.5) {
+          const fiveKMinutes = paceMinutesPerKm * 5;
+          if (fiveKMinutes < best5kMinutes) best5kMinutes = fiveKMinutes;
+        }
       }
+    });
 
-      if (!filtered.length) {
-        if (empty) empty.style.display = "block";
-        return;
+    const avgDistance = totalDistance / runs;
+    const avgPaceMinutesPerKm =
+      totalDistance > 0 && totalTime > 0 ? totalTime / totalDistance : 0;
+
+    function formatPace(minPerKm) {
+      if (!isFinite(minPerKm) || minPerKm <= 0) return "–";
+      const totalSeconds = Math.round(minPerKm * 60);
+      const m = Math.floor(totalSeconds / 60);
+      const s = totalSeconds % 60;
+      return `${m}:${s.toString().padStart(2, "0")} min/km`;
+    }
+
+    title.textContent = `Profile: ${user.name}`;
+    const leagueLabel = LEAGUES.includes(user.league)
+      ? t("league." + user.league)
+      : t("league.pending");
+
+    summary.textContent = `${t("user.leagueLabel", { league: leagueLabel })}, ${t("stats.runs")}: ${runs}`;
+
+    runsCell.textContent = runs.toString();
+    totalDistCell.textContent = `${totalDistance.toFixed(2)} km`;
+    totalTimeCell.textContent = formatMinutesPretty(totalTime);
+    avgDistCell.textContent = `${avgDistance.toFixed(2)} km`;
+    avgPaceCell.textContent = formatPace(avgPaceMinutesPerKm);
+    longestCell.textContent = `${longest.toFixed(2)} km`;
+    best100mCell.textContent = formatSecondsPretty(best100mSeconds);
+    best5kCell.textContent =
+      isFinite(best5kMinutes) && best5kMinutes > 0
+        ? formatMinutesPretty(best5kMinutes)
+        : "–";
+
+    showScene("profile-card");
+  }
+
+  function attachProfileLinks() {
+    document.querySelectorAll(".link-name").forEach(btn => {
+      const userId = btn.getAttribute("data-user-id");
+      btn.onclick = () => showProfile(userId);
+    });
+  }
+
+  // ==========================
+  //  RENDER FUNCTIONS
+  // ==========================
+
+  function renderHeaderUser() {
+    const container = document.getElementById("user-controls");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!currentUser) {
+      const span = document.createElement("span");
+      span.textContent = t("user.notLoggedIn");
+      container.appendChild(span);
+
+      const btn = document.createElement("button");
+      btn.className = "btn btn-small";
+      btn.textContent = t("user.loginButton");
+      btn.onclick = () => showScene("login");
+      container.appendChild(btn);
+      return;
+    }
+
+    const name = currentUser.name;
+    const leagueKey = LEAGUES.includes(currentUser.league)
+      ? "league." + currentUser.league
+      : "league.pending";
+    const leagueLabel = t(leagueKey);
+
+    const info = document.createElement("span");
+    info.textContent = `${t("user.loggedInAs", { name })} · ${t("user.leagueLabel", { league: leagueLabel })}`;
+    container.appendChild(info);
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "btn btn-small";
+    addBtn.style.marginLeft = "8px";
+    addBtn.textContent = t("user.addActivity");
+    addBtn.onclick = () => showScene("entry");
+    container.appendChild(addBtn);
+
+    const logoutBtn = document.createElement("button");
+    logoutBtn.className = "btn btn-small";
+    logoutBtn.style.marginLeft = "4px";
+    logoutBtn.textContent = t("user.logout");
+    logoutBtn.onclick = logout;
+    container.appendChild(logoutBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-small danger";
+    deleteBtn.style.marginLeft = "4px";
+    deleteBtn.textContent = t("user.deleteAccount");
+    deleteBtn.onclick = deleteAccount;
+    container.appendChild(deleteBtn);
+  }
+
+  function renderLeaderboard() {
+    const tbody = document.getElementById("leaderboard-body");
+    const empty = document.getElementById("no-entries");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const players = getPlayerStats();
+    const filterSel = document.getElementById("league-filter");
+    const filter = filterSel ? filterSel.value : "all";
+
+    let filtered = players;
+    if (filter !== "all") {
+      filtered = players.filter(p => p.league === filter);
+    }
+
+    if (!filtered.length) {
+      if (empty) empty.style.display = "block";
+      return;
+    }
+    if (empty) empty.style.display = "none";
+
+    filtered.forEach(player => {
+      const tr = document.createElement("tr");
+
+      let rankSymbol = player.rank;
+      if (player.rank === 1) rankSymbol = "🥇";
+      else if (player.rank === 2) rankSymbol = "🥈";
+      else if (player.rank === 3) rankSymbol = "🥉";
+
+      const leagueClass = LEAGUES.includes(player.league)
+        ? player.league
+        : "pending";
+      const leagueLabel = LEAGUES.includes(player.league)
+        ? t("league." + player.league)
+        : t("league.pending");
+
+      tr.innerHTML = `
+        <td>${rankSymbol}</td>
+        <td>
+          <button type="button" class="link-name" data-user-id="${player.userId}" style="background:none;border:none;color:#007bff;cursor:pointer;text-decoration:underline;">
+            ${player.name}
+          </button>
+        </td>
+        <td><span class="badge-league ${leagueClass}">${leagueLabel}</span></td>
+        <td>${player.totalDistance.toFixed(2)}</td>
+        <td>${player.totalTime.toFixed(1)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    attachProfileLinks();
+  }
+
+  function renderStats() {
+    const tbody = document.getElementById("stats-body");
+    const empty = document.getElementById("no-stats");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (!entries.length) {
+      if (empty) empty.style.display = "block";
+      return;
+    }
+    if (empty) empty.style.display = "none";
+
+    const players = getPlayerStats();
+
+    players.forEach(stats => {
+      const leagueClass = LEAGUES.includes(stats.league)
+        ? stats.league
+        : "pending";
+      const leagueLabel = LEAGUES.includes(stats.league)
+        ? t("league." + stats.league)
+        : t("league.pending");
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>
+          <button type="button" class="link-name" data-user-id="${stats.userId}" style="background:none;border:none;color:#007bff;cursor:pointer;text-decoration:underline;">
+            ${stats.name}
+          </button>
+        </td>
+        <td><span class="badge-league ${leagueClass}">${leagueLabel}</span></td>
+        <td>${stats.runs}</td>
+        <td>${stats.totalDistance.toFixed(2)}</td>
+        <td>${stats.totalTime.toFixed(1)}</td>
+        <td>${stats.avgDistance.toFixed(2)}</td>
+        <td>${stats.bestDistance.toFixed(2)}</td>
+        <td>${formatImprovement(stats.improvement)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    attachProfileLinks();
+  }
+
+  function renderMyActivities() {
+    const tbody = document.getElementById("my-activities-body");
+    const empty = document.getElementById("no-my-activities");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (!currentUser) {
+      if (empty) {
+        empty.style.display = "block";
+        empty.textContent = t("user.notLoggedIn");
       }
-      if (empty) empty.style.display = "none";
+      return;
+    }
 
-      filtered.forEach((player) => {
+    const myEntries = entries.filter(e => e.userId === currentUser.id);
+
+    if (!myEntries.length) {
+      if (empty) {
+        empty.style.display = "block";
+        empty.textContent = t("entry.none");
+      }
+      return;
+    }
+    if (empty) empty.style.display = "none";
+
+    myEntries
+      .slice()
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .forEach(e => {
         const tr = document.createElement("tr");
-
-        let rankSymbol = player.rank;
-        if (player.rank === 1) rankSymbol = "🥇";
-        else if (player.rank === 2) rankSymbol = "🥈";
-        else if (player.rank === 3) rankSymbol = "🥉";
-
         tr.innerHTML = `
-          <td class="rank-medal">${rankSymbol}</td>
-          <td>${player.name}</td>
-          <td><span class="badge-league ${player.league}">
-            ${player.league.charAt(0).toUpperCase() + player.league.slice(1)}</span></td>
-          <td>${player.totalDistance.toFixed(2)} km</td>
-          <td>${player.totalTime.toFixed(1)} min</td>
+          <td>${formatDate(e.timestamp)}</td>
+          <td>${e.distanceKm.toFixed(2)}</td>
+          <td>${e.timeMinutes.toFixed(1)}</td>
+          <td>
+            <button class="btn btn-small danger" style="padding:4px 8px;font-size:12px;" onclick="deleteActivity('${e.id}')">
+              ✕
+            </button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
+  }
+
+  function updateEntryFormLockState() {
+    const distanceInput = document.getElementById("distance");
+    const timeInput = document.getElementById("time");
+    const form = document.getElementById("entry-form");
+    if (!form) return;
+    const submit = form.querySelector("button[type='submit']");
+    const locked = !currentUser;
+
+    if (distanceInput) distanceInput.disabled = locked;
+    if (timeInput) timeInput.disabled = locked;
+    if (submit) submit.disabled = locked;
+  }
+
+  // ==========================
+  //  ACTIVITY DELETION
+  // ==========================
+
+  async function deleteActivity(id) {
+    if (!currentUser) {
+      alert(t("alert.mustLogin"));
+      return;
+    }
+    const entry = entries.find(e => e.id === id);
+    if (!entry) return;
+    if (entry.userId !== currentUser.id) {
+      alert("You can only delete your own activities.");
+      return;
+    }
+    if (!confirm(t("alert.deleteActivityConfirm"))) return;
+
+    await db.collection("activities").doc(id).delete();
+    await loadAllData();
+    restoreCurrentUser();
+  }
+
+  // ==========================
+  //  AUTH
+  // ==========================
+
+  async function login(name, password, codeInput) {
+    if (!db) {
+      alert(t("alert.firebase"));
+      return;
+    }
+    const trimmedName = (name || "").trim();
+    if (!trimmedName || !password) {
+      alert(t("alert.loginMissing"));
+      return;
     }
 
-    function renderStats() {
-      const tbody = document.getElementById("stats-body");
-      const empty = document.getElementById("no-stats");
-      if (!tbody) return;
-
-      tbody.innerHTML = "";
-
-      if (!users.length) {
-        if (empty) empty.style.display = "block";
+    // join code
+    let codeOk = localStorage.getItem(LS_CODE_OK_KEY) === "true";
+    const typedCode = (codeInput || "").trim().toUpperCase();
+    if (!codeOk) {
+      if (typedCode !== HITACHI_CODE) {
+        alert(t("alert.codeWrong"));
         return;
       }
-      if (empty) empty.style.display = "none";
-
-      const players = getPlayerStats();
-
-      players.forEach((stats) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${stats.name}</td>
-          <td><span class="badge-league ${stats.league}">
-            ${stats.league.charAt(0).toUpperCase() + stats.league.slice(1)}</span></td>
-          <td>${stats.runs}</td>
-          <td>${stats.totalDistance.toFixed(2)} km</td>
-          <td>${stats.avgDistance.toFixed(2)} km</td>
-          <td>${stats.bestDistance.toFixed(2)} km</td>
-          <td>${formatImprovement(stats.improvement)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      localStorage.setItem(LS_CODE_OK_KEY, "true");
+      codeOk = true;
     }
 
-    function renderMyActivities() {
-      const tbody = document.getElementById("my-activities-body");
-      const empty = document.getElementById("no-my-activities");
-      if (!tbody) return;
+    // find or create user
+    const existingSnap = await db
+      .collection("users")
+      .where("name", "==", trimmedName)
+      .limit(1)
+      .get();
 
-      tbody.innerHTML = "";
-
-      if (!currentUser) {
-        if (empty) {
-          empty.style.display = "block";
-          empty.textContent = "Log in to see and manage your activities.";
-        }
+    let userDoc = null;
+    if (existingSnap.empty) {
+      const joinMonth = currentMonthKey();
+      const newUser = {
+        name: trimmedName,
+        password,
+        league: "pending",
+        createdAt: Date.now(),
+        joinMonth
+      };
+      const docRef = await db.collection("users").add(newUser);
+      userDoc = { id: docRef.id, ...newUser };
+    } else {
+      const doc = existingSnap.docs[0];
+      const data = doc.data();
+      if (data.password !== password) {
+        alert(t("alert.passwordWrong"));
         return;
       }
-
-      const myEntries = entries.filter((e) => e.userId === currentUser.id);
-
-      if (!myEntries.length) {
-        if (empty) {
-          empty.style.display = "block";
-          empty.textContent = "No activities yet for this account.";
-        }
-        return;
-      }
-      if (empty) empty.style.display = "none";
-
-      myEntries
-        .slice()
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .forEach((e) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${formatDate(e.timestamp)}</td>
-            <td>${e.distanceKm.toFixed(2)} km</td>
-            <td>${e.timeMinutes.toFixed(1)} min</td>
-            <td class="actions-cell">
-              <button onclick="deleteActivity('${e.id}')">Delete</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
+      if (!data.league) data.league = "pending";
+      if (!data.joinMonth) data.joinMonth = currentMonthKey(data.createdAt || Date.now());
+      userDoc = { id: doc.id, ...data };
     }
 
-    // ========= ACTIVITY DELETION =========
-    function deleteActivity(id) {
-      if (!currentUser) {
-        alert("You need to be logged in to delete activities.");
-        return;
-      }
-      const entry = entries.find((e) => e.id === id);
-      if (!entry) return;
-      if (entry.userId !== currentUser.id) {
-        alert("You can only delete your own activities.");
-        return;
-      }
-      if (!confirm("Delete this activity?")) return;
+    currentUser = userDoc;
+    localStorage.setItem(LS_CURRENT_USER_KEY, currentUser.id);
 
-      entries = entries.filter((e) => e.id !== id);
-      saveEntries();
-      renderLeaderboard();
-      renderStats();
-      renderMyActivities();
-    }
+    await loadAllData();
+    restoreCurrentUser();
+    updateEntryFormLockState();
+    showScene("entry");
+  }
 
-    // ========= AUTH: LOGIN / LOGOUT / DELETE ACCOUNT =========
-    function login(name, password) {
-      const trimmedName = name.trim();
-      if (!trimmedName || !password) {
-        alert("Please enter both name and password.");
-        return;
-      }
+  async function logout() {
+    currentUser = null;
+    localStorage.removeItem(LS_CURRENT_USER_KEY);
+    renderHeaderUser();
+    updateEntryFormLockState();
+    renderMyActivities();
+    showScene("welcome");
+  }
 
-      const existing = getUserByName(trimmedName);
+  async function deleteAccount() {
+    if (!currentUser) return;
+    if (!confirm(t("alert.deleteAccountConfirm"))) return;
 
-      if (!existing) {
-        const newLeague = assignStartingLeague();
-        const newUser = {
-          id: generateId(),
-          name: trimmedName,
-          password,
-          league: newLeague,
-          createdAt: Date.now(),
-          lastLoginAt: Date.now(),
-          lastLogoutAt: null
-        };
-        users.push(newUser);
-        currentUser = newUser;
-        saveUsers();
-        localStorage.setItem(STORAGE_KEY_CURRENT_USER, newUser.id);
-        renderHeaderUser();
-        const isMobile = detectDevice();
-        showScene(isMobile ? "leaderboard" : "welcome");
-        return;
-      }
+    const userId = currentUser.id;
 
-      if (existing.password !== password) {
-        alert("Wrong password for this name.");
-        return;
-      }
+    const actsSnap = await db
+      .collection("activities")
+      .where("userId", "==", userId)
+      .get();
+    const batch = db.batch();
+    actsSnap.forEach(doc => batch.delete(doc.ref));
+    batch.delete(db.collection("users").doc(userId));
+    await batch.commit();
 
-      existing.lastLoginAt = Date.now();
-      if (!existing.league || !LEAGUES.includes(existing.league)) {
-        existing.league = "amateurs";
-      }
-      currentUser = existing;
-      saveUsers();
-      localStorage.setItem(STORAGE_KEY_CURRENT_USER, existing.id);
-      renderHeaderUser();
-      const isMobile = detectDevice();
-      showScene(isMobile ? "leaderboard" : "welcome");
-    }
+    currentUser = null;
+    localStorage.removeItem(LS_CURRENT_USER_KEY);
+    await loadAllData();
+    renderHeaderUser();
+    updateEntryFormLockState();
+    renderMyActivities();
+    showScene("welcome");
+  }
 
-    function logout() {
-      if (!currentUser) return;
-      const user = getUserById(currentUser.id);
-      if (user) {
-        user.lastLogoutAt = Date.now();
-      }
-      saveUsers();
-      localStorage.removeItem(STORAGE_KEY_CURRENT_USER);
-      currentUser = null;
-      renderHeaderUser();
-      renderMyActivities();
-      showScene("login");
-    }
+  // ==========================
+  //  FORMS
+  // ==========================
 
-    function deleteAccount() {
-      if (!currentUser) return;
-      const confirmText = "This will delete your account and all your activities. Are you sure?";
-      if (!confirm(confirmText)) return;
-
-      const userId = currentUser.id;
-      users = users.filter((u) => u.id !== userId);
-      entries = entries.filter((e) => e.userId !== userId);
-
-      saveUsers();
-      saveEntries();
-      localStorage.removeItem(STORAGE_KEY_CURRENT_USER);
-      currentUser = null;
-      renderHeaderUser();
-      renderLeaderboard();
-      renderStats();
-      renderMyActivities();
-      showScene("login");
-    }
-
-    // ========= FORM HANDLERS =========
+  function setupForms() {
     const loginForm = document.getElementById("login-form");
     if (loginForm) {
       loginForm.addEventListener("submit", function (e) {
         e.preventDefault();
         const name = document.getElementById("login-name").value;
         const password = document.getElementById("login-password").value;
-        login(name, password);
-        loginForm.reset();
+        const code = document.getElementById("login-code").value;
+        login(name, password, code);
+      });
+    }
+
+    const codeInput = document.getElementById("login-code");
+    if (codeInput) {
+      codeInput.addEventListener("input", () => {
+        codeInput.value = codeInput.value.toUpperCase();
       });
     }
 
     const entryForm = document.getElementById("entry-form");
     if (entryForm) {
-      entryForm.addEventListener("submit", function (e) {
+      entryForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         if (!currentUser) {
-          alert("Please log in before adding activities.");
+          alert(t("alert.mustLogin"));
           showScene("login");
           return;
         }
+
         const distance = parseFloat(document.getElementById("distance").value);
         const time = parseFloat(document.getElementById("time").value);
 
-        if (isNaN(distance) || isNaN(time)) {
-          alert("Please fill in distance and time correctly.");
-          return;
-        }
-        if (distance <= 0 || time <= 0) {
-          alert("Distance and time must be bigger than zero.");
+        if (isNaN(distance) || isNaN(time) || distance <= 0 || time <= 0) {
+          alert(t("alert.activityInvalid"));
           return;
         }
 
-        entries.push({
-          id: generateId(),
+        await db.collection("activities").add({
           userId: currentUser.id,
           distanceKm: distance,
           timeMinutes: time,
           timestamp: Date.now()
         });
 
-        saveEntries();
-        renderLeaderboard();
-        renderStats();
-        renderMyActivities();
-
+        await loadAllData();
+        restoreCurrentUser();
         entryForm.reset();
         showScene("leaderboard");
       });
     }
 
-    // ========= INITIALISE =========
-    function init() {
-      detectDevice();
-      loadEntries();
-      loadUsers();
-      cleanupOldAccounts();
-
-      const currentUserId = localStorage.getItem(STORAGE_KEY_CURRENT_USER);
-      if (currentUserId) {
-        const user = getUserById(currentUserId);
-        if (user) {
-          currentUser = user;
-        } else {
-          localStorage.removeItem(STORAGE_KEY_CURRENT_USER);
-          currentUser = null;
-        }
-      }
-
-      renderHeaderUser();
-      renderLeaderboard();
-      renderStats();
-      renderMyActivities();
-
-      if (currentUser) {
-        const isMobile = detectDevice();
-        showScene(isMobile ? "leaderboard" : "welcome");
-      } else {
-        showScene("login");
-      }
+    const leagueFilter = document.getElementById("league-filter");
+    if (leagueFilter) {
+      leagueFilter.addEventListener("change", renderLeaderboard);
     }
+  }
 
-    init();
-  </script>
+  // ==========================
+  //  INIT
+  // ==========================
+
+  async function init() {
+    initLanguage();
+    initFirebase();
+    setupForms();
+
+    if (!db) return;
+
+    await loadAllData();
+    restoreCurrentUser();
+    updateEntryFormLockState();
+
+    if (currentUser) {
+      showScene("leaderboard");
+    } else {
+      showScene("welcome");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+</script>
 </body>
 </html>
