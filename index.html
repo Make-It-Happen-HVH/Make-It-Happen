@@ -16,16 +16,16 @@
     body {
       margin: 0;
       font-family: Inter, sans-serif;
-      background: #f7f7f7;
-      color: #222;
+      background: #000000;
+      color: #f7f7f7;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       padding: 12px 16px;
-      background: #000000;
-      border-bottom: 1px solid #ddd;
+      background: #111111;
+      border-bottom: 1px solid #333333;
       position: sticky;
       top: 0;
       z-index: 10;
@@ -37,6 +37,7 @@
       padding: 8px 12px;
       font-size: 15px;
       cursor: pointer;
+      color: #f7f7f7;
     }
 
     header nav button.active {
@@ -82,21 +83,25 @@
       width: 100%;
       padding: 10px;
       margin: 6px 0 14px;
-      border: 1px solid #ccc;
+      border: 1px solid #555;
       border-radius: 6px;
       font-size: 16px;
+      background: #111;
+      color: #f7f7f7;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 14px;
+      background: #111111;
     }
 
     th, td {
       padding: 8px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #333;
       text-align: left;
+      color: #f7f7f7;
     }
 
     .badge-league {
@@ -122,6 +127,7 @@
     <button onclick="showScene('stats')" data-i18n="nav.stats"></button>
     <button onclick="showScene('rules')" data-i18n="nav.rules"></button>
     <button onclick="showScene('about')" data-i18n="nav.about"></button>
+    <button onclick="showScene('help')" data-i18n="nav.help"></button>
     <button id="nav-login-btn" onclick="showScene('login')" data-i18n="nav.login"></button>
   </nav>
 
@@ -161,6 +167,11 @@
     <button class="btn" data-i18n="login.submit"></button>
   </form>
 
+  <button id="view-code-btn" class="btn btn-small" type="button" style="margin-top:4px;">
+    View saved join code
+  </button>
+  <p id="saved-code-display" style="display:none; margin-top:6px;"></p>
+
   <p data-i18n="login.note"></p>
 </section>
 
@@ -169,8 +180,9 @@
   <h1 data-i18n="leaderboard.title"></h1>
 
   <label data-i18n="leaderboard.filter"></label>
-  <select id="league-filter">
+  <select id="league-filter" class="input" style="max-width:260px;">
     <option value="all" data-i18n="leaderboard.all"></option>
+    <option value="pending" data-i18n="league.pending"></option>
     <option value="amateurs" data-i18n="league.amateurs"></option>
     <option value="intermediates" data-i18n="league.intermediates"></option>
     <option value="pros" data-i18n="league.pros"></option>
@@ -192,7 +204,7 @@
 
   <p id="no-entries" data-i18n="leaderboard.none"></p>
 
-  <!-- Pending "league" view -->
+  <!-- Pending view -->
   <h2 data-i18n="pending.title"></h2>
   <p data-i18n="pending.subtitle"></p>
 
@@ -231,11 +243,7 @@
   </table>
 
   <p id="no-stats" data-i18n="stats.none"></p>
-
-  <div style="margin-top:20px;">
-    <button class="btn" onclick="applyPromotions()" data-i18n="stats.promotions"></button>
-    <button class="btn" onclick="placeNewJoiners()" data-i18n="stats.placejoiners"></button>
-  </div>
+  <!-- No buttons here; promotions and placements are automatic -->
 </section>
 
 <!-- RULES SCENE -->
@@ -261,6 +269,12 @@
   <p data-i18n="about.text1"></p>
   <p data-i18n="about.text2"></p>
   <p data-i18n="about.text3"></p>
+</section>
+
+<!-- HELP SCENE -->
+<section id="scene-help" class="scene">
+  <h1 data-i18n="help.title"></h1>
+  <p data-i18n="help.text"></p>
 </section>
 
 <!-- ENTRY FORM + MY ACTIVITIES -->
@@ -331,6 +345,7 @@
  
   const HITACHI_CODE = "27HG0QIBD2";
   const LS_CODE_OK_KEY = "mih_hitachi_code_ok";
+  const LS_JOIN_CODE_KEY = "mih_join_code";
   const LS_CURRENT_USER_KEY = "mih_current_user_id";
   const LS_LANG_KEY = "mih_lang";
 
@@ -342,6 +357,7 @@
   let entries = [];
   let currentUser = null;
   let currentLang = "en";
+  let autoRunning = false;
 
   // ==========================
   //  TRANSLATIONS
@@ -355,6 +371,7 @@
       "nav.stats": "Stats",
       "nav.rules": "Rules & prizes",
       "nav.about": "About",
+      "nav.help": "Help",
       "nav.login": "Login",
 
       // welcome
@@ -389,7 +406,7 @@
       "lb.distance": "Total distance (km)",
       "lb.time": "Total time (min)",
 
-      // pending section
+      // pending
       "pending.title": "Pending joiners",
       "pending.subtitle": "New sign-ups who will be placed into leagues at the start of the next month.",
       "pending.rank": "#",
@@ -406,20 +423,18 @@
       "stats.bestdistance": "Longest distance (km)",
       "stats.improvement": "Improvement",
       "stats.none": "Stats will appear once people start logging activities.",
-      "stats.promotions": "Apply promotions / relegations for this month",
-      "stats.placejoiners": "Place new joiners into leagues",
 
       // rules
       "rules.title": "Rules, leagues and prizes",
       "rules.joiningtitle": "Joining and signing up",
       "rules.joiningtext":
-        "Only Hitachi Vantara members can join, using the access code. You can sign up any time. When you create an account you start as “Pending”. You can log activities straight away. At the start of the next month, the organiser presses the button to place all pending players into the leagues based on their distance, time and speed.",
+        "Only Hitachi Vantara members can join, using the access code. You can sign up any time. When you create an account you start as “Pending”. You can log activities straight away. At the start of the next month, the system automatically places all pending players into the leagues based on their distance, time and speed.",
       "rules.leaguetitle": "Leagues and balance",
       "rules.leaguetext":
         "There are four leagues: Amateurs, Intermediates, Pros and Legends. The system tries to keep league sizes balanced. When placing new joiners it avoids making one league much larger than the others, so that the difference between the biggest and smallest league stays small.",
       "rules.promotiontitle": "Promotions and relegations",
       "rules.promotiontext":
-        "Each month you can apply promotions and relegations from the Stats page. The number of players moved depends on how many people are active: with 8+ players there is 1 promotion and 1 relegation, with 16+ there are 2 of each, and with 32+ there are 3 of each. Rankings are based on total distance first, then total time, then average speed.",
+        "Each month the site automatically applies promotions and relegations. The number of players moved depends on how many people are active: with 8+ players there is 1 promotion and 1 relegation, with 16+ there are 2 of each, and with 32+ there are 3 of each. Rankings are based on total distance first, then total time, then average speed.",
       "rules.prizetitle": "Prizes",
       "rules.prizetext":
         "Local teams can decide the exact prizes. A simple version is: a small prize for the monthly winner and a bigger prize at the end of the year for the player with the strongest overall performance.",
@@ -432,6 +447,11 @@
         "You can walk, run or cycle and log your distance and time. The system looks at both how far you go and how long you spend moving. That means slower but very dedicated people still get rewarded, not only the fastest runners.",
       "about.text3":
         "New players sign up first, then officially join a league at the start of the next month. The site compares their first month to everyone else, then places them into the league that fits them best while keeping league sizes balanced.",
+
+      // help
+      "help.title": "Help and support",
+      "help.text":
+        "If you need any assistance, if something looks wrong, or if you have a question about Make It Happen, you can text +45 51 34 31 33.",
 
       // entry
       "entry.title": "Log a new activity",
@@ -459,7 +479,6 @@
       "user.loggedInAs": "Logged in as {name}",
       "user.leagueLabel": "League: {league}",
       "user.addActivity": "Add activity",
-      "user.logout": "Log out",
       "user.deleteAccount": "Delete account",
 
       // alerts
@@ -477,7 +496,8 @@
       "alert.placeSummary": "Placed {placed} new joiner(s) into leagues. {skipped}",
       "alert.placeSkipped": "{count} left pending (not enough data yet or for balance).",
       "alert.deleteActivityConfirm": "Delete this activity?",
-      "alert.deleteAccountConfirm": "This will delete your account and all your activities. Are you sure?"
+      "alert.deleteAccountConfirm": "This will delete your account and all your activities. Are you sure?",
+      "alert.alreadyLoggedIn": "You are already logged in. Delete your account if you want to start over."
     },
 
     da: {
@@ -486,6 +506,7 @@
       "nav.stats": "Statistik",
       "nav.rules": "Regler og præmier",
       "nav.about": "Om projektet",
+      "nav.help": "Hjælp",
       "nav.login": "Log ind",
 
       "welcome.title": "Bevæg dig mere. Konkurrér sammen.",
@@ -531,19 +552,17 @@
       "stats.bestdistance": "Længste tur (km)",
       "stats.improvement": "Forbedring",
       "stats.none": "Statistik vises, når deltagerne begynder at logge aktiviteter.",
-      "stats.promotions": "Udfør oprykning og nedrykning for denne måned",
-      "stats.placejoiners": "Placér nye deltagere i ligaer",
 
       "rules.title": "Regler, ligaer og præmier",
       "rules.joiningtitle": "Tilmelding og opstart",
       "rules.joiningtext":
-        "Kun medarbejdere i Hitachi Vantara kan deltage, ved hjælp af adgangskoden. Du kan tilmelde dig når som helst. Når du opretter en konto, starter du som “Afventer”. Du kan logge aktiviteter med det samme. Ved starten af næste måned trykker tovholderen på knappen, som placerer alle afventende spillere i ligaerne ud fra deres distance, tid og hastighed.",
+        "Kun medarbejdere i Hitachi Vantara kan deltage, ved hjælp af adgangskoden. Du kan tilmelde dig når som helst. Når du opretter en konto, starter du som “Afventer”. Du kan logge aktiviteter med det samme. Ved starten af næste måned placerer systemet automatisk alle afventende spillere i ligaerne ud fra deres distance, tid og hastighed.",
       "rules.leaguetitle": "Ligaer og balance",
       "rules.leaguetext":
         "Der er fire ligaer: Amatører, Øvede, Prof og Legender. Systemet forsøger at holde ligastørrelserne nogenlunde i balance. Når nye deltagere placeres, undgår det at gøre én liga meget større end de andre, så forskellen mellem den største og mindste liga forbliver lille.",
       "rules.promotiontitle": "Oprykning og nedrykning",
       "rules.promotiontext":
-        "Hver måned kan du udføre oprykning og nedrykning fra Statistik-siden. Antallet af spillere der flyttes, afhænger af hvor mange der er aktive: ved 8+ spillere er der 1 oprykning og 1 nedrykning, ved 16+ er der 2 af hver, og ved 32+ er der 3 af hver. Ranglisten bygger først på samlet distance, derefter samlet tid, og til sidst gennemsnitlig hastighed.",
+        "Hver måned udfører siden automatisk oprykning og nedrykning. Antallet af spillere der flyttes, afhænger af hvor mange der er aktive: ved 8+ spillere er der 1 oprykning og 1 nedrykning, ved 16+ er der 2 af hver, og ved 32+ er der 3 af hver. Ranglisten bygger først på samlet distance, derefter samlet tid, og til sidst gennemsnitlig hastighed.",
       "rules.prizetitle": "Præmier",
       "rules.prizetext":
         "De lokale teams beslutter præmierne. En enkel model er: en lille præmie til den månedlige vinder og en større præmie ved årets slutning til den spiller, der samlet set har klaret sig bedst.",
@@ -555,6 +574,10 @@
         "Du kan gå, løbe eller cykle og registrere din distance og tid. Systemet kigger både på hvor langt du kommer, og hvor længe du er i bevægelse. Det betyder, at langsommere men meget dedikerede deltagere også bliver belønnet, ikke kun de hurtigste løbere.",
       "about.text3":
         "Nye spillere tilmelder sig først og træder officielt ind i en liga ved starten af næste måned. Siden sammenligner deres første måned med resten af feltet og placerer dem i den liga, der passer bedst, samtidig med at ligastørrelserne holdes i balance.",
+
+      "help.title": "Hjælp og support",
+      "help.text":
+        "Hvis du har brug for hjælp, hvis noget ser forkert ud, eller hvis du har et spørgsmål til Make It Happen, kan du sende en sms til +45 51 34 31 33.",
 
       "entry.title": "Registrér en ny aktivitet",
       "entry.distance": "Distance (km)",
@@ -579,7 +602,6 @@
       "user.loggedInAs": "Logget ind som {name}",
       "user.leagueLabel": "Liga: {league}",
       "user.addActivity": "Tilføj aktivitet",
-      "user.logout": "Log ud",
       "user.deleteAccount": "Slet konto",
 
       "alert.loginMissing": "Indtast både navn og adgangskode.",
@@ -596,7 +618,8 @@
       "alert.placeSummary": "Placerede {placed} ny(e) deltager(e) i ligaer. {skipped}",
       "alert.placeSkipped": "{count} blev efterladt som Afventer (mangler data eller for balance).",
       "alert.deleteActivityConfirm": "Slet denne aktivitet?",
-      "alert.deleteAccountConfirm": "Dette sletter din konto og alle dine aktiviteter. Er du sikker?"
+      "alert.deleteAccountConfirm": "Dette sletter din konto og alle dine aktiviteter. Er du sikker?",
+      "alert.alreadyLoggedIn": "Du er allerede logget ind. Slet din konto, hvis du vil starte forfra."
     },
 
     ja: {
@@ -605,6 +628,7 @@
       "nav.stats": "統計",
       "nav.rules": "ルールと賞品",
       "nav.about": "このプロジェクトについて",
+      "nav.help": "ヘルプ",
       "nav.login": "ログイン",
 
       "welcome.title": "もっと動く。みんなで競う。",
@@ -617,7 +641,7 @@
       "login.password": "パスワード",
       "login.code": "Hitachi Vantara 参加コード",
       "login.submit": "ログイン / アカウント作成",
-      "login.note": "参加できるのは Hitachi Vantara のメンバーのみで、コード が必要です。アカウントは自分の端末だけでなく、共有データベースに保存されます。長期間まったく利用されないアカウントは整理される場合があります。",
+      "login.note": "参加できるのは Hitachi Vantara のメンバーのみで、コードが必要です。アカウントは自分の端末だけでなく、共有データベースに保存されます。長期間まったく利用されないアカウントは整理される場合があります。",
 
       "league.amateurs": "アマチュア",
       "league.intermediates": "ミドル",
@@ -650,19 +674,17 @@
       "stats.bestdistance": "最長距離（km）",
       "stats.improvement": "改善度",
       "stats.none": "参加者がアクティビティを記録すると統計が表示されます。",
-      "stats.promotions": "今月の昇格 / 降格を実行",
-      "stats.placejoiners": "新規参加者をリーグに割り当て",
 
       "rules.title": "ルール・リーグ・賞品について",
       "rules.joiningtitle": "参加方法とスタート",
       "rules.joiningtext":
-        "参加できるのは Hitachi Vantara のメンバーのみで、アクセスコード が必要です。いつでもサインアップできます。アカウントを作成すると、最初は「保留」状態になりますが、すぐにアクティビティを記録できます。翌月の初めに、担当者がボタンを押すと、保留中のプレイヤーが距離・時間・スピードに基づいて各リーグに自動的に割り当てられます。",
+        "参加できるのは Hitachi Vantara のメンバーのみで、アクセスコード が必要です。いつでもサインアップできます。アカウントを作成すると、最初は「保留」状態になりますが、すぐにアクティビティを記録できます。翌月の初めに、システムが距離・時間・スピードに基づいて保留中のプレイヤーを自動的に各リーグへ割り当てます。",
       "rules.leaguetitle": "リーグとバランス",
       "rules.leaguetext":
         "リーグは4つあります：アマチュア、ミドル、プロ、レジェンド。システムはリーグごとの人数バランスを保つようにします。新規参加者を配置するとき、一部のリーグだけ極端に人数が多くならないよう調整します。",
       "rules.promotiontitle": "昇格と降格",
       "rules.promotiontext":
-        "毎月、統計ページから昇格と降格を実行できます。移動人数はアクティブなプレイヤー数によって決まります：8人以上で1人昇格＋1人降格、16人以上で2人、32人以上で3人です。ランキングは総距離を最優先し、その次に総時間、最後に平均スピードを使って決められます。",
+        "毎月、サイトが自動的に昇格と降格を行います。移動人数はアクティブなプレイヤー数によって決まります：8人以上で1人昇格＋1人降格、16人以上で2人、32人以上で3人です。ランキングは総距離を最優先し、その次に総時間、最後に平均スピードを使って決められます。",
       "rules.prizetitle": "賞品",
       "rules.prizetext":
         "具体的な賞品内容は各ローカルチームが決められます。シンプルな例としては、毎月のトッププレイヤーに小さな賞品を、年間で最も活躍したプレイヤーにより大きな賞品を用意する、などがあります。",
@@ -674,6 +696,10 @@
         "歩く・走る・自転車など、好きな移動方法で距離と時間を記録できます。システムは「どれくらい速いか」だけでなく、「どれだけ長く動いたか」も評価します。つまり、スピードよりも継続して頑張る人もしっかり評価されます。",
       "about.text3":
         "新しい参加者はまずサインアップし、翌月のスタート時に正式にどこかのリーグへ入ります。サイトはその最初の1カ月を他の参加者と比較し、その人に合ったリーグに割り当てます。同時に、リーグごとの人数バランスも保つようにしています。",
+
+      "help.title": "ヘルプとサポート",
+      "help.text":
+        "何かおかしいと思ったとき、質問があるとき、またはサポートが必要なときは、+45 51 34 31 33 にテキストメッセージを送ってください。",
 
       "entry.title": "新しいアクティビティを記録",
       "entry.distance": "距離（km）",
@@ -698,7 +724,6 @@
       "user.loggedInAs": "{name} としてログイン中",
       "user.leagueLabel": "リーグ：{league}",
       "user.addActivity": "アクティビティを追加",
-      "user.logout": "ログアウト",
       "user.deleteAccount": "アカウント削除",
 
       "alert.loginMissing": "名前とパスワードを入力してください。",
@@ -715,7 +740,8 @@
       "alert.placeSummary": "{placed} 人の新規参加者をリーグに配置しました。{skipped}",
       "alert.placeSkipped": "{count} 人は保留のままです（データ不足またはバランス調整のため）。",
       "alert.deleteActivityConfirm": "このアクティビティを削除しますか？",
-      "alert.deleteAccountConfirm": "アカウントとすべてのアクティビティを削除します。本当に続けますか？"
+      "alert.deleteAccountConfirm": "アカウントとすべてのアクティビティを削除します。本当に続けますか？",
+      "alert.alreadyLoggedIn": "すでにログインしています。初めからやり直したい場合はアカウントを削除してください。"
     }
   };
 
@@ -895,6 +921,10 @@
     renderStats();
     renderMyActivities();
     renderPendingList();
+
+    if (!autoRunning) {
+      autoMonthlyUpdates();
+    }
   }
 
   function restoreCurrentUser() {
@@ -903,6 +933,7 @@
       currentUser = null;
       renderHeaderUser();
       updateEntryFormLockState();
+      updateNavLoginVisibility();
       return;
     }
     const found = users.find(u => u.id === storedId);
@@ -914,6 +945,7 @@
     }
     renderHeaderUser();
     updateEntryFormLockState();
+    updateNavLoginVisibility();
   }
 
   // ==========================
@@ -992,15 +1024,42 @@
   }
 
   // ==========================
+  //  MONTHLY: AUTO UPDATES
+  // ==========================
+
+  async function autoMonthlyUpdates() {
+    if (!db) return;
+    autoRunning = true;
+    try {
+      const nowMonth = currentMonthKey();
+      const metaRef = db.collection("meta").doc("global_state");
+      const snap = await metaRef.get();
+      const data = snap.exists ? snap.data() : {};
+      if (data.lastUpdatedMonth === nowMonth) {
+        return;
+      }
+
+      await placeNewJoiners(true);
+      await applyPromotions(true);
+
+      await metaRef.set({ lastUpdatedMonth: nowMonth }, { merge: true });
+    } catch (e) {
+      console.error("Auto monthly updates error:", e);
+    } finally {
+      autoRunning = false;
+    }
+  }
+
+  // ==========================
   //  MONTHLY: PLACE NEW JOINERS
   // ==========================
 
-  async function placeNewJoiners() {
+  async function placeNewJoiners(auto = false) {
     if (!db) return;
 
     const players = getPlayerStats();
     if (!players.length) {
-      alert(t("alert.noActivitiesToPlace"));
+      if (!auto) alert(t("alert.noActivitiesToPlace"));
       return;
     }
 
@@ -1015,7 +1074,7 @@
     );
 
     if (!candidates.length) {
-      alert(t("alert.noPending"));
+      if (!auto) alert(t("alert.noPending"));
       return;
     }
 
@@ -1068,7 +1127,9 @@
     });
 
     if (!placed) {
-      alert("No new joiners could be placed yet. They may need more activities or the leagues are already very balanced.");
+      if (!auto) {
+        alert("No new joiners could be placed yet. They may need more activities or the leagues are already very balanced.");
+      }
       return;
     }
 
@@ -1076,24 +1137,26 @@
     await loadAllData();
     restoreCurrentUser();
 
-    let skippedText = "";
-    if (skipped > 0) {
-      skippedText = t("alert.placeSkipped", { count: skipped });
+    if (!auto) {
+      let skippedText = "";
+      if (skipped > 0) {
+        skippedText = t("alert.placeSkipped", { count: skipped });
+      }
+      alert(t("alert.placeSummary", { placed, skipped: skippedText }));
     }
-    alert(t("alert.placeSummary", { placed, skipped: skippedText }));
   }
 
   // ==========================
   //  MONTHLY: PROMOTIONS
   // ==========================
 
-  async function applyPromotions() {
+  async function applyPromotions(auto = false) {
     if (!db) return;
 
     const players = getPlayerStats();
     const total = players.length;
     if (total === 0) {
-      alert(t("alert.noPlayers"));
+      if (!auto) alert(t("alert.noPlayers"));
       return;
     }
 
@@ -1104,7 +1167,7 @@
     else moves = 0;
 
     if (moves === 0) {
-      alert(t("alert.notEnoughPlayers"));
+      if (!auto) alert(t("alert.notEnoughPlayers"));
       return;
     }
 
@@ -1135,7 +1198,9 @@
     await batch.commit();
     await loadAllData();
     restoreCurrentUser();
-    alert(t("alert.promotionsDone", { up: moves, down: moves }));
+    if (!auto) {
+      alert(t("alert.promotionsDone", { up: moves, down: moves }));
+    }
   }
 
   // ==========================
@@ -1284,13 +1349,6 @@
     addBtn.textContent = t("user.addActivity");
     addBtn.onclick = () => showScene("entry");
     container.appendChild(addBtn);
-
-    const logoutBtn = document.createElement("button");
-    logoutBtn.className = "btn btn-small";
-    logoutBtn.style.marginLeft = "4px";
-    logoutBtn.textContent = t("user.logout");
-    logoutBtn.onclick = logout;
-    container.appendChild(logoutBtn);
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "btn btn-small danger";
@@ -1483,6 +1541,19 @@
     if (submit) submit.disabled = locked;
   }
 
+  function updateCodeInputState() {
+    const codeInput = document.getElementById("login-code");
+    if (!codeInput) return;
+    const codeOk = localStorage.getItem(LS_CODE_OK_KEY) === "true";
+    const savedCode = localStorage.getItem(LS_JOIN_CODE_KEY) || "";
+    if (codeOk) {
+      codeInput.value = savedCode || HITACHI_CODE;
+      codeInput.disabled = true;
+    } else {
+      codeInput.disabled = false;
+    }
+  }
+
   // ==========================
   //  ACTIVITY DELETION
   // ==========================
@@ -1514,6 +1585,11 @@
       alert(t("alert.firebase"));
       return;
     }
+    if (currentUser) {
+      alert(t("alert.alreadyLoggedIn"));
+      return;
+    }
+
     const trimmedName = (name || "").trim();
     if (!trimmedName || !password) {
       alert(t("alert.loginMissing"));
@@ -1521,13 +1597,16 @@
     }
 
     let codeOk = localStorage.getItem(LS_CODE_OK_KEY) === "true";
-    const typedCode = (codeInput || "").trim().toUpperCase();
+    const typedCodeRaw = (codeInput || "").trim().toUpperCase();
+    const typedCode = typedCodeRaw || HITACHI_CODE;
+
     if (!codeOk) {
       if (typedCode !== HITACHI_CODE) {
         alert(t("alert.codeWrong"));
         return;
       }
       localStorage.setItem(LS_CODE_OK_KEY, "true");
+      localStorage.setItem(LS_JOIN_CODE_KEY, typedCode);
       codeOk = true;
     }
 
@@ -1567,16 +1646,7 @@
     await loadAllData();
     restoreCurrentUser();
     updateEntryFormLockState();
-    showScene("entry");
-  }
-
-  async function logout() {
-    currentUser = null;
-    localStorage.removeItem(LS_CURRENT_USER_KEY);
-    renderHeaderUser();
-    updateEntryFormLockState();
-    renderMyActivities();
-    showScene("welcome");
+    showScene("leaderboard");
   }
 
   async function deleteAccount() {
@@ -1601,6 +1671,27 @@
     updateEntryFormLockState();
     renderMyActivities();
     showScene("welcome");
+  }
+
+  // ==========================
+  //  VIEW SAVED CODE BUTTON
+  // ==========================
+
+  function setupViewCodeButton() {
+    const btn = document.getElementById("view-code-btn");
+    const display = document.getElementById("saved-code-display");
+    if (!btn || !display) return;
+    btn.addEventListener("click", () => {
+      const saved = localStorage.getItem(LS_JOIN_CODE_KEY);
+      if (saved) {
+        display.textContent = "Saved join code on this device: " + saved;
+      } else if (localStorage.getItem(LS_CODE_OK_KEY) === "true") {
+        display.textContent = "Join code in use: " + HITACHI_CODE;
+      } else {
+        display.textContent = "No join code has been saved on this device yet.";
+      }
+      display.style.display = "block";
+    });
   }
 
   // ==========================
@@ -1672,6 +1763,8 @@
     initLanguage();
     initFirebase();
     setupForms();
+    setupViewCodeButton();
+    updateCodeInputState();
 
     if (!db) return;
 
