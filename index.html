@@ -757,12 +757,19 @@
   }
 
   function applyTranslations() {
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      el.textContent = t(key);
-    });
-    renderHeaderUser();
-  }
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    el.textContent = t(key);
+  });
+
+  // Re-render things that were built with JS so they also switch language
+  renderHeaderUser();
+  renderLeaderboard();
+  renderStats();
+  renderMyActivities();
+  renderPendingList();
+}
+
 
   function initLanguage() {
     const select = document.getElementById("lang-select");
