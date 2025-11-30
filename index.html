@@ -75,7 +75,7 @@
     }
 
     .danger {
-      background: #b00000;
+      background: #ff0026;
     }
 
     .input {
@@ -109,6 +109,7 @@
     .intermediates { background: #007bff; }
     .pros { background: #28a745; }
     .legends { background: #ff0026; }
+    .pending { background: #888888; }
   </style>
 </head>
 
@@ -121,7 +122,7 @@
     <button onclick="showScene('stats')" data-i18n="nav.stats"></button>
     <button onclick="showScene('rules')" data-i18n="nav.rules"></button>
     <button onclick="showScene('about')" data-i18n="nav.about"></button>
-    <button onclick="showScene('login')" data-i18n="nav.login"></button>
+    <button id="nav-login-btn" onclick="showScene('login')" data-i18n="nav.login"></button>
   </nav>
 
   <div style="display:flex; gap:8px; align-items:center;">
@@ -190,6 +191,23 @@
   </table>
 
   <p id="no-entries" data-i18n="leaderboard.none"></p>
+
+  <!-- Pending "league" view -->
+  <h2 data-i18n="pending.title"></h2>
+  <p data-i18n="pending.subtitle"></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th data-i18n="pending.rank"></th>
+        <th data-i18n="pending.name"></th>
+        <th data-i18n="pending.joinMonth"></th>
+      </tr>
+    </thead>
+    <tbody id="pending-body"></tbody>
+  </table>
+
+  <p id="no-pending" data-i18n="pending.none"></p>
 </section>
 
 <!-- STATS SCENE -->
@@ -292,8 +310,6 @@
   </table>
 </section>
 
-<!-- PART 2 SCRIPT WILL BE INSERTED BELOW -->
-<!-- ↓↓↓ ASK ME WHEN READY FOR PART 2 ↓↓↓ -->
 <!-- Firebase scripts -->
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
@@ -303,7 +319,6 @@
   //  CONFIG
   // ==========================
 
-  // TODO: replace this with YOUR Firebase config from the Firebase console
   const firebaseConfig = {
 
   apiKey: "AIzaSyAkbH3mJkeheF3L7EaqN1kMgbFd_LJCIXo",
@@ -382,6 +397,14 @@
       "lb.distance": "Total distance (km)",
       "lb.time": "Total time (min)",
 
+      // pending section
+      "pending.title": "Pending joiners",
+      "pending.subtitle": "New sign-ups who will be placed into leagues at the start of the next month.",
+      "pending.rank": "#",
+      "pending.name": "Name",
+      "pending.joinMonth": "Join month",
+      "pending.none": "No pending joiners right now.",
+
       // stats
       "stats.title": "Player stats and league moves",
       "stats.runs": "Runs",
@@ -447,7 +470,7 @@
       "user.logout": "Log out",
       "user.deleteAccount": "Delete account",
 
-      // alerts (main ones)
+      // alerts
       "alert.loginMissing": "Please enter both name and password.",
       "alert.codeWrong": "The Hitachi code is wrong.",
       "alert.passwordWrong": "Wrong password for this name.",
@@ -500,6 +523,13 @@
       "lb.league": "Liga",
       "lb.distance": "Samlet distance (km)",
       "lb.time": "Samlet tid (min)",
+
+      "pending.title": "Afventende deltagere",
+      "pending.subtitle": "Nye tilmeldinger, som bliver placeret i ligaer ved starten af næste måned.",
+      "pending.rank": "#",
+      "pending.name": "Navn",
+      "pending.joinMonth": "Tilmeldingsmåned",
+      "pending.none": "Ingen afventende deltagere lige nu.",
 
       "stats.title": "Spillerstatistik og ligaflytninger",
       "stats.runs": "Ture",
@@ -613,6 +643,13 @@
       "lb.distance": "総距離（km）",
       "lb.time": "総時間（分）",
 
+      "pending.title": "保留中の参加者",
+      "pending.subtitle": "翌月の開始時にリーグへ割り当てられる新規参加者。",
+      "pending.rank": "順",
+      "pending.name": "名前",
+      "pending.joinMonth": "参加月",
+      "pending.none": "現在、保留中の参加者はいません。",
+
       "stats.title": "プレイヤー統計とリーグ昇降格",
       "stats.runs": "回数",
       "stats.totaldistance": "総距離（km）",
@@ -706,7 +743,7 @@
       const key = el.getAttribute("data-i18n");
       el.textContent = t(key);
     });
-    renderHeaderUser(); // update header text in new language
+    renderHeaderUser();
   }
 
   function initLanguage() {
@@ -818,6 +855,16 @@
     });
   }
 
+  function updateNavLoginVisibility() {
+    const btn = document.getElementById("nav-login-btn");
+    if (!btn) return;
+    if (currentUser) {
+      btn.style.display = "none";
+    } else {
+      btn.style.display = "inline-block";
+    }
+  }
+
   // ==========================
   //  FIREBASE INIT
   // ==========================
@@ -855,6 +902,7 @@
     renderLeaderboard();
     renderStats();
     renderMyActivities();
+    renderPendingList();
   }
 
   function restoreCurrentUser() {
@@ -919,7 +967,7 @@
 
     players.forEach(p => {
       p.avgDistance = p.runs > 0 ? p.totalDistance / p.runs : 0;
-      p.speed = p.totalTime > 0 ? p.totalDistance / p.totalTime : 0; // km per minute
+      p.speed = p.totalTime > 0 ? p.totalDistance / p.totalTime : 0;
       let improvement = 0;
       if (
         p.firstEntry &&
@@ -928,8 +976,8 @@
         p.totalDistance > 0 &&
         p.totalTime > 0
       ) {
-        const baselinePace = p.firstEntry.timeMinutes / p.firstEntry.distanceKm; // min/km
-        const avgPace = p.totalTime / p.totalDistance; // min/km
+        const baselinePace = p.firstEntry.timeMinutes / p.firstEntry.distanceKm;
+        const avgPace = p.totalTime / p.totalDistance;
         if (baselinePace > 0) {
           improvement = ((baselinePace - avgPace) / baselinePace) * 100;
         }
@@ -937,7 +985,6 @@
       p.improvement = improvement;
     });
 
-    // sort by distance, then time, then speed
     players.sort((a, b) => {
       if (b.totalDistance !== a.totalDistance) {
         return b.totalDistance - a.totalDistance;
@@ -1071,7 +1118,6 @@
 
     const batch = db.batch();
 
-    // promotions
     let promoted = 0;
     for (let i = 0; i < players.length && promoted < moves; i++) {
       const p = players[i];
@@ -1083,7 +1129,6 @@
       promoted++;
     }
 
-    // relegations
     let relegated = 0;
     for (let i = players.length - 1; i >= 0 && relegated < moves; i--) {
       const p = players[i];
@@ -1226,6 +1271,8 @@
       btn.textContent = t("user.loginButton");
       btn.onclick = () => showScene("login");
       container.appendChild(btn);
+
+      updateNavLoginVisibility();
       return;
     }
 
@@ -1259,6 +1306,8 @@
     deleteBtn.textContent = t("user.deleteAccount");
     deleteBtn.onclick = deleteAccount;
     container.appendChild(deleteBtn);
+
+    updateNavLoginVisibility();
   }
 
   function renderLeaderboard() {
@@ -1357,6 +1406,34 @@
     attachProfileLinks();
   }
 
+  function renderPendingList() {
+    const tbody = document.getElementById("pending-body");
+    const empty = document.getElementById("no-pending");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const pending = users
+      .filter(u => u.league === "pending")
+      .slice()
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+    if (!pending.length) {
+      if (empty) empty.style.display = "block";
+      return;
+    }
+    if (empty) empty.style.display = "none";
+
+    pending.forEach((u, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${u.name}</td>
+        <td>${u.joinMonth || ""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
   function renderMyActivities() {
     const tbody = document.getElementById("my-activities-body");
     const empty = document.getElementById("no-my-activities");
@@ -1451,7 +1528,6 @@
       return;
     }
 
-    // join code
     let codeOk = localStorage.getItem(LS_CODE_OK_KEY) === "true";
     const typedCode = (codeInput || "").trim().toUpperCase();
     if (!codeOk) {
@@ -1463,7 +1539,6 @@
       codeOk = true;
     }
 
-    // find or create user
     const existingSnap = await db
       .collection("users")
       .where("name", "==", trimmedName)
@@ -1611,6 +1686,7 @@
     await loadAllData();
     restoreCurrentUser();
     updateEntryFormLockState();
+    updateNavLoginVisibility();
 
     if (currentUser) {
       showScene("leaderboard");
