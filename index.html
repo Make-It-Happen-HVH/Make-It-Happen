@@ -319,7 +319,7 @@
     <tr><th data-i18n="profile.avgdistance"></th><td id="profile-avg-distance"></td></tr>
     <tr><th data-i18n="profile.avgpace"></th><td id="profile-avg-pace"></td></tr>
     <tr><th data-i18n="profile.longest"></th><td id="profile-longest"></td></tr>
-    <tr><th data-i18n="profile.best100m"></th><td id="profile-100m"></td></tr>
+    <tr><th data-i18n="profile.best10k"></th><td id="profile-10k"></td></tr>
     <tr><th data-i18n="profile.best5k"></th><td id="profile-5k"></td></tr>
   </table>
 </section>
@@ -470,7 +470,7 @@
       "profile.avgdistance": "Average distance",
       "profile.avgpace": "Average pace",
       "profile.longest": "Longest activity",
-      "profile.best100m": "Fastest ~100 m",
+      "profile.best10k": "Fastest ~10 km",
       "profile.best5k": "Fastest ~5 km",
 
       // user header
@@ -594,7 +594,7 @@
       "profile.avgdistance": "Gennemsnitlig distance",
       "profile.avgpace": "Gennemsnitstempo",
       "profile.longest": "Længste aktivitet",
-      "profile.best100m": "Hurtigste ~100 m",
+      "profile.best10k": "Hurtigste ~10 km",
       "profile.best5k": "Hurtigste ~5 km",
 
       "user.notLoggedIn": "Ikke logget ind",
@@ -716,7 +716,7 @@
       "profile.avgdistance": "平均距離",
       "profile.avgpace": "平均ペース",
       "profile.longest": "最長アクティビティ",
-      "profile.best100m": "最速 約100 m",
+      "profile.best10k": "最速 約10 km",
       "profile.best5k": "最速 約5 km",
 
       "user.notLoggedIn": "未ログイン",
@@ -757,12 +757,13 @@
   }
 
   function applyTranslations() {
+  // Update all static text
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     el.textContent = t(key);
   });
 
-  // Re-render things that were built with JS so they also switch language
+  // Re-render anything that is built with JS so it also changes language
   renderHeaderUser();
   renderLeaderboard();
   renderStats();
@@ -770,21 +771,25 @@
   renderPendingList();
 }
 
-
   function initLanguage() {
-    const select = document.getElementById("lang-select");
-    const saved = localStorage.getItem(LS_LANG_KEY) || "en";
-    currentLang = saved;
-    if (select) {
-      select.value = saved;
-      select.addEventListener("change", () => {
-        currentLang = select.value;
-        localStorage.setItem(LS_LANG_KEY, currentLang);
-        applyTranslations();
-      });
-    }
-    applyTranslations();
+  const select = document.getElementById("lang-select");
+  const saved = localStorage.getItem(LS_LANG_KEY) || "en";
+
+  currentLang = saved;
+
+  if (select) {
+    select.value = saved;
+
+    select.addEventListener("change", () => {
+      currentLang = select.value;
+      localStorage.setItem(LS_LANG_KEY, currentLang);
+      applyTranslations();
+    });
   }
+
+  // Apply once on load in the saved language
+  applyTranslations();
+}
 
   // ==========================
   //  BASIC HELPERS
