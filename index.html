@@ -168,8 +168,9 @@
   </form>
 
   <button id="view-code-btn" class="btn btn-small" type="button" style="margin-top:4px;">
-    View saved join code
-  </button>
+  View saved join code
+</button>
+
   <p id="saved-code-display" style="display:none; margin-top:6px;"></p>
 
   <p data-i18n="login.note"></p>
@@ -345,7 +346,7 @@
  
   const HITACHI_CODE = "27HG0QIBD2";
   const LS_CODE_OK_KEY = "mih_hitachi_code_ok";
-  const LS_JOIN_CODE_KEY = "mih_join_code";
+  const LS_PASSWORD_KEY = "mih_join_password";
   const LS_CURRENT_USER_KEY = "mih_current_user_id";
   const LS_LANG_KEY = "mih_lang";
 
@@ -757,39 +758,38 @@
   }
 
   function applyTranslations() {
-  // Update all static text
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    el.textContent = t(key);
-  });
-
-  // Re-render anything that is built with JS so it also changes language
-  renderHeaderUser();
-  renderLeaderboard();
-  renderStats();
-  renderMyActivities();
-  renderPendingList();
-}
-
-  function initLanguage() {
-  const select = document.getElementById("lang-select");
-  const saved = localStorage.getItem(LS_LANG_KEY) || "en";
-
-  currentLang = saved;
-
-  if (select) {
-    select.value = saved;
-
-    select.addEventListener("change", () => {
-      currentLang = select.value;
-      localStorage.setItem(LS_LANG_KEY, currentLang);
-      applyTranslations();
+    // Update static text
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
     });
+    // Re-render dynamic bits so they also switch language
+    renderHeaderUser();
+    renderLeaderboard();
+    renderStats();
+    renderMyActivities();
+    renderPendingList();
   }
 
-  // Apply once on load in the saved language
-  applyTranslations();
-}
+  function initLanguage() {
+    const select = document.getElementById("lang-select");
+    const saved = localStorage.getItem(LS_LANG_KEY) || "en";
+
+    currentLang = saved;
+
+    if (select) {
+      select.value = saved;
+
+      select.addEventListener("change", () => {
+        currentLang = select.value;
+        localStorage.setItem(LS_LANG_KEY, currentLang);
+        applyTranslations();
+      });
+    }
+
+    // Apply once on load
+    applyTranslations();
+  }
 
   // ==========================
   //  BASIC HELPERS
@@ -1270,10 +1270,11 @@
 
       if (e.distanceKm > 0 && e.timeMinutes > 0) {
         const paceMinutesPerKm = e.timeMinutes / e.distanceKm;
+
         if (e.distanceKm >= 9.5) {
-  const tenKMinutes = paceMinutesPerKm * 10;
-  if (tenKMinutes < best10kMinutes) best10kMinutes = tenKMinutes;
-}
+          const tenKMinutes = paceMinutesPerKm * 10;
+          if (tenKMinutes < best10kMinutes) best10kMinutes = tenKMinutes;
+        }
 
         if (e.distanceKm >= 4.5) {
           const fiveKMinutes = paceMinutesPerKm * 5;
@@ -1308,9 +1309,9 @@
     avgPaceCell.textContent = formatPace(avgPaceMinutesPerKm);
     longestCell.textContent = `${longest.toFixed(2)} km`;
     best10kCell.textContent =
-  isFinite(best10kMinutes) && best10kMinutes > 0
-    ? formatMinutesPretty(best10kMinutes)
-    : "–";
+      isFinite(best10kMinutes) && best10kMinutes > 0
+        ? formatMinutesPretty(best10kMinutes)
+        : "–";
     best5kCell.textContent =
       isFinite(best5kMinutes) && best5kMinutes > 0
         ? formatMinutesPretty(best5kMinutes)
@@ -1622,10 +1623,10 @@
         alert(t("alert.codeWrong"));
         return;
       }
+      
       localStorage.setItem(LS_CODE_OK_KEY, "true");
-      localStorage.setItem(LS_JOIN_CODE_KEY, typedCode);
-      codeOk = true;
-    }
+// we do not save the join code anymore
+codeOk = true;
 
     const existingSnap = await db
       .collection("users")
@@ -1658,7 +1659,8 @@
     }
 
     currentUser = userDoc;
-    localStorage.setItem(LS_CURRENT_USER_KEY, currentUser.id);
+localStorage.setItem(LS_CURRENT_USER_KEY, currentUser.id);
+localStorage.setItem(LS_PASSWORD_KEY, password);
 
     await loadAllData();
     restoreCurrentUser();
@@ -1699,14 +1701,13 @@
     const display = document.getElementById("saved-code-display");
     if (!btn || !display) return;
     btn.addEventListener("click", () => {
-      const saved = localStorage.getItem(LS_JOIN_CODE_KEY);
-      if (saved) {
-        display.textContent = "Saved join code on this device: " + saved;
-      } else if (localStorage.getItem(LS_CODE_OK_KEY) === "true") {
-        display.textContent = "Join code in use: " + HITACHI_CODE;
-      } else {
-        display.textContent = "No join code has been saved on this device yet.";
-      }
+      const saved = localStorage.getItem(LS_PASSWORD_KEY);
+if (saved) {
+  display.textContent = "Saved login password on this device: " + saved;
+} else {
+  display.textContent = "No login password has been saved on this device yet.";
+}
+
       display.style.display = "block";
     });
   }
