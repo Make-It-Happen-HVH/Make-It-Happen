@@ -168,9 +168,8 @@
   </form>
 
   <button id="view-code-btn" class="btn btn-small" type="button" style="margin-top:4px;">
-  View saved join code
-</button>
-
+    View saved login password
+  </button>
   <p id="saved-code-display" style="display:none; margin-top:6px;"></p>
 
   <p data-i18n="login.note"></p>
@@ -244,7 +243,6 @@
   </table>
 
   <p id="no-stats" data-i18n="stats.none"></p>
-  <!-- No buttons here; promotions and placements are automatic -->
 </section>
 
 <!-- RULES SCENE -->
@@ -346,9 +344,9 @@
  
   const HITACHI_CODE = "27HG0QIBD2";
   const LS_CODE_OK_KEY = "mih_hitachi_code_ok";
-  const LS_PASSWORD_KEY = "mih_join_password";
   const LS_CURRENT_USER_KEY = "mih_current_user_id";
   const LS_LANG_KEY = "mih_lang";
+  const LS_PASSWORD_KEY = "mih_saved_password";
 
   const LEAGUES = ["amateurs", "intermediates", "pros", "legends"];
   const MIN_RUNS_FOR_PLACEMENT = 3;
@@ -758,12 +756,10 @@
   }
 
   function applyTranslations() {
-    // Update static text
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
       el.textContent = t(key);
     });
-    // Re-render dynamic bits so they also switch language
     renderHeaderUser();
     renderLeaderboard();
     renderStats();
@@ -779,7 +775,6 @@
 
     if (select) {
       select.value = saved;
-
       select.addEventListener("change", () => {
         currentLang = select.value;
         localStorage.setItem(LS_LANG_KEY, currentLang);
@@ -787,7 +782,6 @@
       });
     }
 
-    // Apply once on load
     applyTranslations();
   }
 
@@ -1036,25 +1030,39 @@
   }
 
   // ==========================
-  //  MONTHLY: AUTO UPDATES
+  //  MONTHLY: AUTO UPDATES (after 3rd)
   // ==========================
 
   async function autoMonthlyUpdates() {
     if (!db) return;
     autoRunning = true;
     try {
-      const nowMonth = currentMonthKey();
-      const metaRef = db.collection("meta").doc("global_state");
-      const snap = await metaRef.get();
-      const data = snap.exists ? snap.data() : {};
-      if (data.lastUpdatedMonth === nowMonth) {
+      const today = new Date();
+      const monthKey = currentMonthKey(today);
+      const day = today.getDate();
+
+      // Only run on or after the 3rd of the month
+      if (day < 3) {
+        autoRunning = false;
         return;
       }
 
+      const metaRef = db.collection("meta").doc("global_state");
+      const snap = await metaRef.get();
+      const data = snap.exists ? snap.data() : {};
+
+      // If we already ran for this month, do nothing
+      if (data.lastPromotionMonth === monthKey) {
+        autoRunning = false;
+        return;
+      }
+
+      // Run automatic placement + promotions
       await placeNewJoiners(true);
       await applyPromotions(true);
 
-      await metaRef.set({ lastUpdatedMonth: nowMonth }, { merge: true });
+      // Mark month as updated
+      await metaRef.set({ lastPromotionMonth: monthKey }, { merge: true });
     } catch (e) {
       console.error("Auto monthly updates error:", e);
     } finally {
@@ -1559,19 +1567,6 @@
     if (submit) submit.disabled = locked;
   }
 
-  function updateCodeInputState() {
-    const codeInput = document.getElementById("login-code");
-    if (!codeInput) return;
-    const codeOk = localStorage.getItem(LS_CODE_OK_KEY) === "true";
-    const savedCode = localStorage.getItem(LS_JOIN_CODE_KEY) || "";
-    if (codeOk) {
-      codeInput.value = savedCode || HITACHI_CODE;
-      codeInput.disabled = true;
-    } else {
-      codeInput.disabled = false;
-    }
-  }
-
   // ==========================
   //  ACTIVITY DELETION
   // ==========================
@@ -1623,10 +1618,9 @@
         alert(t("alert.codeWrong"));
         return;
       }
-      
       localStorage.setItem(LS_CODE_OK_KEY, "true");
-// we do not save the join code anymore
-codeOk = true;
+      codeOk = true;
+    }
 
     const existingSnap = await db
       .collection("users")
@@ -1659,8 +1653,8 @@ codeOk = true;
     }
 
     currentUser = userDoc;
-localStorage.setItem(LS_CURRENT_USER_KEY, currentUser.id);
-localStorage.setItem(LS_PASSWORD_KEY, password);
+    localStorage.setItem(LS_CURRENT_USER_KEY, currentUser.id);
+    localStorage.setItem(LS_PASSWORD_KEY, password);
 
     await loadAllData();
     restoreCurrentUser();
@@ -1685,6 +1679,8 @@ localStorage.setItem(LS_PASSWORD_KEY, password);
 
     currentUser = null;
     localStorage.removeItem(LS_CURRENT_USER_KEY);
+    localStorage.removeItem(LS_PASSWORD_KEY);
+
     await loadAllData();
     renderHeaderUser();
     updateEntryFormLockState();
@@ -1693,7 +1689,7 @@ localStorage.setItem(LS_PASSWORD_KEY, password);
   }
 
   // ==========================
-  //  VIEW SAVED CODE BUTTON
+  //  VIEW SAVED PASSWORD BUTTON
   // ==========================
 
   function setupViewCodeButton() {
@@ -1702,12 +1698,11 @@ localStorage.setItem(LS_PASSWORD_KEY, password);
     if (!btn || !display) return;
     btn.addEventListener("click", () => {
       const saved = localStorage.getItem(LS_PASSWORD_KEY);
-if (saved) {
-  display.textContent = "Saved login password on this device: " + saved;
-} else {
-  display.textContent = "No login password has been saved on this device yet.";
-}
-
+      if (saved) {
+        display.textContent = "Saved login password on this device: " + saved;
+      } else {
+        display.textContent = "No login password has been saved on this device yet.";
+      }
       display.style.display = "block";
     });
   }
@@ -1782,7 +1777,6 @@ if (saved) {
     initFirebase();
     setupForms();
     setupViewCodeButton();
-    updateCodeInputState();
 
     if (!db) return;
 
