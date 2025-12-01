@@ -1230,7 +1230,7 @@
     const avgDistCell = document.getElementById("profile-avg-distance");
     const avgPaceCell = document.getElementById("profile-avg-pace");
     const longestCell = document.getElementById("profile-longest");
-    const best100mCell = document.getElementById("profile-100m");
+    const best10kCell = document.getElementById("profile-10k");
     const best5kCell = document.getElementById("profile-5k");
 
     const user = users.find(u => u.id === userId);
@@ -1250,7 +1250,7 @@
       avgDistCell.textContent = "–";
       avgPaceCell.textContent = "–";
       longestCell.textContent = "–";
-      best100mCell.textContent = "–";
+      best10kCell.textContent = "–";
       best5kCell.textContent = "–";
       showScene("profile-card");
       return;
@@ -1260,7 +1260,7 @@
     let totalDistance = 0;
     let totalTime = 0;
     let longest = 0;
-    let best100mSeconds = Infinity;
+    let best10kMinutes = Infinity;
     let best5kMinutes = Infinity;
 
     myEntries.forEach(e => {
@@ -1270,8 +1270,10 @@
 
       if (e.distanceKm > 0 && e.timeMinutes > 0) {
         const paceMinutesPerKm = e.timeMinutes / e.distanceKm;
-        const hundredSeconds = paceMinutesPerKm * 0.1 * 60;
-        if (hundredSeconds < best100mSeconds) best100mSeconds = hundredSeconds;
+        if (e.distanceKm >= 9.5) {
+  const tenKMinutes = paceMinutesPerKm * 10;
+  if (tenKMinutes < best10kMinutes) best10kMinutes = tenKMinutes;
+}
 
         if (e.distanceKm >= 4.5) {
           const fiveKMinutes = paceMinutesPerKm * 5;
@@ -1305,7 +1307,10 @@
     avgDistCell.textContent = `${avgDistance.toFixed(2)} km`;
     avgPaceCell.textContent = formatPace(avgPaceMinutesPerKm);
     longestCell.textContent = `${longest.toFixed(2)} km`;
-    best100mCell.textContent = formatSecondsPretty(best100mSeconds);
+    best10kCell.textContent =
+  isFinite(best10kMinutes) && best10kMinutes > 0
+    ? formatMinutesPretty(best10kMinutes)
+    : "–";
     best5kCell.textContent =
       isFinite(best5kMinutes) && best5kMinutes > 0
         ? formatMinutesPretty(best5kMinutes)
