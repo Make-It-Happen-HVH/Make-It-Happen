@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hallway Horror – Full Game</title>
+  <title>Skinwalker Park</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     html, body {
       margin: 0;
@@ -24,9 +25,9 @@
       left: 10px;
       z-index: 10;
       padding: 8px 12px;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       font-size: 13px;
       backdrop-filter: blur(4px);
     }
@@ -43,38 +44,21 @@
       margin-top: 4px;
     }
 
-    #controls {
-      position: fixed;
-      left: 10px;
-      bottom: 10px;
-      z-index: 10;
-      padding: 6px 10px;
-      background: rgba(0, 0, 0, 0.75);
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    #hud .line {
+      margin-top: 4px;
       font-size: 11px;
       opacity: 0.85;
     }
 
-    #hint {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
-      z-index: 10;
-      padding: 6px 10px;
-      background: rgba(0, 0, 0, 0.75);
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 11px;
-      opacity: 0.85;
-      max-width: 220px;
-      text-align: right;
+    #levelInfo {
+      margin-top: 4px;
+      font-size: 12px;
     }
 
     #staminaContainer {
       margin-top: 6px;
-      width: 180px;
-      height: 8px;
+      width: 160px;
+      height: 7px;
       border-radius: 999px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       overflow: hidden;
@@ -86,6 +70,34 @@
       background: linear-gradient(90deg, #6cff6c, #ffeb3b, #ff5252);
       transform-origin: left center;
       transform: scaleX(1);
+    }
+
+    #controls {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 10;
+      padding: 6px 10px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    #hint {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      z-index: 10;
+      padding: 6px 10px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 11px;
+      opacity: 0.85;
+      max-width: 240px;
+      text-align: right;
     }
 
     #vignette {
@@ -108,17 +120,17 @@
       z-index: 6;
       background:
         radial-gradient(circle at center,
-          rgba(255,0,0,0.2) 0%,
+          rgba(0,100,255,0.0) 0%,
           rgba(0,0,0,0.9) 70%);
       opacity: 0;
-      transition: opacity 0.12s ease-out;
+      transition: opacity 0.15s ease-out;
     }
 
     #overlay {
       position: fixed;
       inset: 0;
       z-index: 20;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(0, 0, 0, 0.96);
       display: none;
       align-items: center;
       justify-content: center;
@@ -128,7 +140,7 @@
 
     #overlay h1 {
       font-size: 40px;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       margin-bottom: 10px;
     }
@@ -148,7 +160,7 @@
       background: transparent;
       color: #fff;
       font-size: 13px;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
     }
@@ -175,11 +187,12 @@
 </head>
 <body>
   <div id="hud">
-    <strong>Hallway Horror</strong>
+    <strong>Skinwalker Park</strong>
     <div class="sub">
-      Toys: <span id="toyCount">0</span> / <span id="toyTotal">4</span><br />
-      Get all your toys, then reach the front door.
+      Survive. Stay away from the tall ones.
     </div>
+    <div id="levelInfo">Level: <span id="levelNum">1</span></div>
+    <div class="line">When you hear whistling and footsteps, run.</div>
     <div id="staminaContainer">
       <div id="staminaBar"></div>
     </div>
@@ -187,12 +200,13 @@
 
   <div id="controls">
     Move: W A S D / Arrows<br />
-    Sprint: Shift &nbsp;&nbsp; Flashlight: F
+    Sprint: Shift &nbsp;&nbsp; Flashlight: F<br />
+    Zoom: Mouse wheel
   </div>
 
   <div id="hint">
-    You are a kid in the dark.<br />
-    The tall thing owns the hallway.
+    You start in a clearing.<br />
+    The trees hide things that do not like being watched.
   </div>
 
   <div id="vignette"></div>
@@ -205,31 +219,31 @@
   </div>
 
   <div id="startHint">
-    Click the game and press any key to start walking.
+    Click the game window and press any key to wake up in the park.
   </div>
 
-  <!-- Optional simple sounds (will just fail silently if blocked) -->
-  <audio id="heartSound" src="https://upload.wikimedia.org/wikipedia/commons/1/1e/Heartbeat_2.ogg" loop></audio>
-  <audio id="growlSound" src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Lion_growl.ogg"></audio>
+  <!-- Simple placeholder sounds. You can replace with your own files -->
+  <audio id="whistleSound" src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Whistling.ogg"></audio>
+  <audio id="stepsSound" src="https://upload.wikimedia.org/wikipedia/commons/6/67/Footsteps_on_gravel.ogg" loop></audio>
 
-  <!-- Three.js CDN -->
+  <!-- Three.js -->
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
   <script>
-    // ===== BASIC VARIABLES =====
+    // ============ BASIC SETUP ============
+
     let scene, camera, renderer;
-    let player, playerGroup, monster, flashlight;
-    let walls = [];
-    let furniture = [];
-    let toys = [];
-    let exitDoor;
+    let player, playerGroup;
+    let flashlight;
+    let stars;
+    let ground;
+    let trees = [];
+    let skinwalkers = [];
 
-    const HOUSE_SIZE = 36;
-    const KID_CAMERA_HEIGHT = 1.4;
-    const TOY_TOTAL = 4;
-    let collectedToys = 0;
+    const PARK_RADIUS = 70;
+    const CLEARING_RADIUS = 10;
+    const PLAYER_RADIUS = 0.6;
 
-    // Movement / input
     const keys = {
       KeyW: false, KeyA: false, KeyS: false, KeyD: false,
       ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
@@ -238,224 +252,204 @@
     };
 
     let lastTime = 0;
-    let gameState = "waiting"; // waiting, playing, caught, win
-    let stamina = 1; // 0–1
-    let staminaRegenDelay = 0;
+    let cameraDistance = 7;
+    let cameraMin = 3;
+    let cameraMax = 14;
+
+    let stamina = 1;
+    let staminaCooldown = 0;
     const staminaBar = document.getElementById("staminaBar");
 
-    // Monster AI
-    let monsterTarget = null;
-    let monsterAlert = false;
-
-    // UI elements
-    const toyCountEl = document.getElementById("toyCount");
-    const toyTotalEl = document.getElementById("toyTotal");
-    const dangerOverlay = document.getElementById("dangerOverlay");
+    let gameState = "waiting"; // waiting, playing, dead
     const overlay = document.getElementById("overlay");
     const overlayTitle = document.getElementById("overlayTitle");
     const overlayText = document.getElementById("overlayText");
     const overlayBtn = document.getElementById("overlayBtn");
     const startHint = document.getElementById("startHint");
 
-    toyTotalEl.textContent = TOY_TOTAL.toString();
+    const dangerOverlay = document.getElementById("dangerOverlay");
+    const levelNumEl = document.getElementById("levelNum");
+
+    // Level / wave system
+    let level = 1;
+    let levelTime = 0;
+    const levelLength = 60; // seconds before next level
+    const baseSkinwalkers = 3;
 
     // Sounds
-    const heartSound = document.getElementById("heartSound");
-    const growlSound = document.getElementById("growlSound");
+    const whistleSound = document.getElementById("whistleSound");
+    const stepsSound = document.getElementById("stepsSound");
 
-    function tryStartAudio() {
-      heartSound.volume = 0;
-      heartSound.play().then(() => {
-        heartSound.pause();
-        heartSound.currentTime = 0;
-      }).catch(() => {});
+    function tryPlay(audio, volume = 1) {
+      audio.volume = volume;
+      audio.play().catch(() => {});
     }
 
-    // ===== INIT =====
+    // ============ INIT ============
+
     function init() {
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
-      scene.fog = new THREE.Fog(0x000000, 5, 55);
+      scene.fog = new THREE.Fog(0x000000, 15, 130);
 
       camera = new THREE.PerspectiveCamera(
         70,
         window.innerWidth / window.innerHeight,
         0.1,
-        200
+        300
       );
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       document.body.appendChild(renderer.domElement);
 
-      // Lights
-      const ambient = new THREE.AmbientLight(0xffffff, 0.04);
-      scene.add(ambient);
-
-      const moon = new THREE.DirectionalLight(0x666688, 0.3);
-      moon.position.set(20, 25, -15);
-      scene.add(moon);
-
-      flashlight = new THREE.SpotLight(0xffffff, 2.2, 20, Math.PI / 7, 0.5, 1.4);
-      flashlight.castShadow = true;
-      flashlight.position.set(0, 5, 5);
-      flashlight.target.position.set(0, 0, 0);
-      flashlight.visible = true;
-      scene.add(flashlight);
-      scene.add(flashlight.target);
-
-      // Floor
-      const floorGeo = new THREE.PlaneGeometry(HOUSE_SIZE, HOUSE_SIZE);
-      const floorMat = new THREE.MeshStandardMaterial({
-        color: 0x101010,
-        roughness: 0.95
-      });
-      const floor = new THREE.Mesh(floorGeo, floorMat);
-      floor.rotation.x = -Math.PI / 2;
-      floor.receiveShadow = true;
-      scene.add(floor);
-
-      createHouse();
-      createFurniture();
+      createLights();
+      createGround();
+      createStars();
+      createTrees();
       createPlayer();
-      createMonster();
-      createToys();
-      createExitDoor();
+      createSkinwalkersForLevel(level);
 
-      // Camera initial position
       updateCameraInstant();
 
-      // Listeners
       window.addEventListener("keydown", onKeyDown);
       window.addEventListener("keyup", onKeyUp);
       window.addEventListener("resize", onResize);
+      window.addEventListener("wheel", onWheel);
       overlayBtn.addEventListener("click", restartGame);
 
       lastTime = performance.now();
       animate();
     }
 
-    // ===== HOUSE GEOMETRY =====
-    function createWall(width, depth, x, z, height = 3, color = 0x222222) {
+    // ============ LIGHTS, SKY, GROUND ============
+
+    function createLights() {
+      const ambient = new THREE.AmbientLight(0x7799ff, 0.2);
+      scene.add(ambient);
+
+      const moon = new THREE.DirectionalLight(0x99bbff, 0.7);
+      moon.position.set(50, 80, -20);
+      moon.castShadow = true;
+      moon.shadow.mapSize.set(2048, 2048);
+      moon.shadow.camera.near = 10;
+      moon.shadow.camera.far = 200;
+      moon.shadow.camera.left = -100;
+      moon.shadow.camera.right = 100;
+      moon.shadow.camera.top = 100;
+      moon.shadow.camera.bottom = -100;
+      scene.add(moon);
+
+      flashlight = new THREE.SpotLight(0xffffff, 2.4, 35, Math.PI / 7, 0.4, 1.4);
+      flashlight.castShadow = true;
+      flashlight.position.set(0, 2, 0);
+      flashlight.target.position.set(0, 0, -1);
+      flashlight.visible = true;
+      scene.add(flashlight);
+      scene.add(flashlight.target);
+    }
+
+    function createGround() {
+      const geo = new THREE.CircleGeometry(PARK_RADIUS, 64);
       const mat = new THREE.MeshStandardMaterial({
-        color,
-        roughness: 0.9,
-        metalness: 0.05
+        color: 0x0b0f12,
+        roughness: 0.95,
+        metalness: 0.0
       });
-      const geo = new THREE.BoxGeometry(width, height, depth);
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(x, height / 2, z);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-      walls.push(mesh);
-      return mesh;
+      ground = new THREE.Mesh(geo, mat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      scene.add(ground);
     }
 
-    function createHouse() {
-      const t = 0.8;
-      const h = HOUSE_SIZE;
+    function createStars() {
+      const starCount = 800;
+      const positions = new Float32Array(starCount * 3);
 
-      // Outer walls
-      createWall(h, t, 0, -h / 2);
-      createWall(h, t, 0, h / 2);
-      createWall(t, h, -h / 2, 0);
-      createWall(t, h, h / 2, 0);
-
-      // Main long hallway through the middle (horizontal)
-      createWall(h - 6, t, 0, 0);
-
-      // Vertical hallway section
-      createWall(t, 18, 0, -4);
-
-      // Rooms around
-      // Top-left room
-      createWall(10, t, -10, -10);
-      createWall(t, 10, -15, -6);
-      createWall(t, 10, -5, -6);
-
-      // Top-right room
-      createWall(10, t, 10, -10);
-      createWall(t, 10, 5, -6);
-      createWall(t, 10, 15, -6);
-
-      // Bottom-left room
-      createWall(12, t, -11, 10);
-      createWall(t, 8, -17, 6);
-      createWall(t, 8, -5, 6);
-
-      // Bottom-right room
-      createWall(10, t, 10, 10);
-      createWall(t, 8, 5, 6);
-      createWall(t, 8, 15, 6);
-
-      // Simple door frames for looks
-      const frameMat = new THREE.MeshStandardMaterial({
-        color: 0x151515,
-        roughness: 0.75
-      });
-      const frameTopGeo = new THREE.BoxGeometry(2.2, 0.25, 0.3);
-      const frameSideGeo = new THREE.BoxGeometry(0.2, 2.3, 0.3);
-
-      function doorFrame(x, z, rotY = 0) {
-        const g = new THREE.Group();
-        const top = new THREE.Mesh(frameTopGeo, frameMat);
-        const left = new THREE.Mesh(frameSideGeo, frameMat);
-        const right = new THREE.Mesh(frameSideGeo, frameMat);
-        top.position.set(0, 2.1, 0);
-        left.position.set(-0.95, 1.0, 0);
-        right.position.set(0.95, 1.0, 0);
-        g.add(top, left, right);
-        g.position.set(x, 0, z);
-        g.rotation.y = rotY;
-        scene.add(g);
+      for (let i = 0; i < starCount; i++) {
+        const r = 200;
+        const theta = Math.random() * 2 * Math.PI;
+        const y = 80 + Math.random() * 40;
+        const x = Math.cos(theta) * r;
+        const z = Math.sin(theta) * r;
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
       }
 
-      doorFrame(-6, 0);
-      doorFrame(6, 0);
-      doorFrame(0, -6, Math.PI / 2);
-      doorFrame(0, -12, Math.PI / 2);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+      const mat = new THREE.PointsMaterial({
+        color: 0x77aaff,
+        size: 0.6,
+        sizeAttenuation: true
+      });
+
+      stars = new THREE.Points(geo, mat);
+      scene.add(stars);
     }
 
-    function createFurniture() {
-      // Just some simple shapes to make rooms feel less empty
-      function makeBox(w, h, d, x, y, z, color) {
-        const geo = new THREE.BoxGeometry(w, h, d);
-        const mat = new THREE.MeshStandardMaterial({
-          color,
-          roughness: 0.8
+    function createTrees() {
+      const trunkMat = new THREE.MeshStandardMaterial({
+        color: 0x3b2a1a,
+        roughness: 0.9
+      });
+      const leavesMat = new THREE.MeshStandardMaterial({
+        color: 0x0b2814,
+        roughness: 0.9
+      });
+
+      const trunkGeo = new THREE.CylinderGeometry(0.4, 0.6, 5, 8);
+      const leavesGeo = new THREE.ConeGeometry(3, 8, 10);
+
+      for (let i = 0; i < 80; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = CLEARING_RADIUS + 5 + Math.random() * (PARK_RADIUS - CLEARING_RADIUS - 10);
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+
+        const tree = new THREE.Group();
+
+        const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+        trunk.position.set(0, 2.5, 0);
+        trunk.castShadow = true;
+        trunk.receiveShadow = true;
+
+        const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+        leaves.position.set(0, 7, 0);
+        leaves.castShadow = true;
+        leaves.receiveShadow = true;
+
+        tree.add(trunk, leaves);
+        tree.position.set(x, 0, z);
+        scene.add(tree);
+
+        trees.push({
+          object: tree,
+          x,
+          z,
+          radius: 2.2 // collision radius
         });
-        const m = new THREE.Mesh(geo, mat);
-        m.position.set(x, y + h / 2, z);
-        m.castShadow = true;
-        m.receiveShadow = true;
-        scene.add(m);
-        furniture.push(m);
       }
-
-      // Sofas / tables / shelves
-      makeBox(3, 1, 1.2, -12, 0, -8, 0x333333);  // top-left "sofa"
-      makeBox(2, 0.7, 1.5, 10, 0, -8, 0x2c2c2c); // top-right
-      makeBox(2, 0.8, 2, -14, 0, 8, 0x292929);   // bottom-left
-      makeBox(2, 1.4, 0.5, 12, 0, 10, 0x252525); // shelf bottom-right
-      makeBox(1, 0.5, 1, -2, 0, 10, 0x303030);   // little table
     }
 
-    // ===== PLAYER (kid model) =====
+    // ============ PLAYER ============
+
     function createPlayer() {
-      // PlayerGroup: used for collisions and positioning
       playerGroup = new THREE.Group();
-      playerGroup.position.set(0, 0, HOUSE_SIZE / 2 - 3);
+      playerGroup.position.set(0, 0, 0);
       scene.add(playerGroup);
 
-      // Body pieces
       const bodyMat = new THREE.MeshStandardMaterial({
         color: 0x88aaff,
         roughness: 0.7
       });
       const legMat = new THREE.MeshStandardMaterial({
         color: 0x444457,
-        roughness: 0.8
+        roughness: 0.85
       });
       const headMat = new THREE.MeshStandardMaterial({
         color: 0xffddb8,
@@ -466,416 +460,370 @@
       const legGeo = new THREE.BoxGeometry(0.25, 0.7, 0.25);
       const leftLeg = new THREE.Mesh(legGeo, legMat);
       const rightLeg = new THREE.Mesh(legGeo, legMat);
-      leftLeg.position.set(-0.15, 0.35, 0);
-      rightLeg.position.set(0.15, 0.35, 0);
+      leftLeg.position.set(-0.18, 0.35, 0);
+      rightLeg.position.set(0.18, 0.35, 0);
 
       // Body
-      const bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.4);
+      const bodyGeo = new THREE.BoxGeometry(0.6, 0.9, 0.4);
       const body = new THREE.Mesh(bodyGeo, bodyMat);
-      body.position.set(0, 0.9, 0);
+      body.position.set(0, 0.95, 0);
 
       // Head
       const headGeo = new THREE.BoxGeometry(0.45, 0.45, 0.4);
       const head = new THREE.Mesh(headGeo, headMat);
-      head.position.set(0, 1.45, 0);
+      head.position.set(0, 1.55, 0.05);
 
-      // Simple dark hair
-      const hairGeo = new THREE.BoxGeometry(0.47, 0.2, 0.42);
+      const hairGeo = new THREE.BoxGeometry(0.46, 0.2, 0.4);
       const hairMat = new THREE.MeshStandardMaterial({
         color: 0x222222,
         roughness: 0.8
       });
       const hair = new THREE.Mesh(hairGeo, hairMat);
-      hair.position.set(0, 1.6, 0);
+      hair.position.set(0, 1.68, 0.05);
 
       playerGroup.add(leftLeg, rightLeg, body, head, hair);
 
-      // Keep reference for animation
       player = {
         group: playerGroup,
         leftLeg,
         rightLeg,
+        yaw: 0,
         moveTime: 0
       };
     }
 
     function updatePlayer(delta) {
-      const isRunning = keys.ShiftLeft || keys.ShiftRight;
-      const baseSpeed = 2.4;
-      const runMultiplier = 1.7;
+      const running = keys.ShiftLeft || keys.ShiftRight;
+      const baseSpeed = 3;
+      const runMultiplier = 1.8;
 
-      // Stamina
-      let speedMultiplier = 1;
-      if (isRunning && stamina > 0.1) {
+      // stamina
+      if (running && stamina > 0.1 && anyMoveKeyDown()) {
         stamina -= 0.5 * delta;
-        staminaRegenDelay = 1.0;
-        speedMultiplier = runMultiplier;
+        staminaCooldown = 1.0;
       } else {
-        staminaRegenDelay -= delta;
-        if (staminaRegenDelay <= 0) {
-          stamina += 0.25 * delta;
+        staminaCooldown -= delta;
+        if (staminaCooldown <= 0) {
+          stamina += 0.3 * delta;
         }
       }
       stamina = Math.max(0, Math.min(1, stamina));
       staminaBar.style.transform = "scaleX(" + stamina.toFixed(3) + ")";
 
-      // Movement
-      let dx = 0;
-      let dz = 0;
-      if (keys.KeyW || keys.ArrowUp) dz -= 1;
-      if (keys.KeyS || keys.ArrowDown) dz += 1;
-      if (keys.KeyA || keys.ArrowLeft) dx -= 1;
-      if (keys.KeyD || keys.ArrowRight) dx += 1;
+      const effectiveRun = running && stamina > 0.1;
+      const speed = baseSpeed * (effectiveRun ? runMultiplier : 1);
 
-      if (dx !== 0 || dz !== 0) {
-        const len = Math.sqrt(dx * dx + dz * dz);
-        dx /= len;
-        dz /= len;
+      let moveForward = 0;
+      let moveSide = 0;
+      if (keys.KeyW || keys.ArrowUp) moveForward += 1;
+      if (keys.KeyS || keys.ArrowDown) moveForward -= 1;
+      if (keys.KeyA || keys.ArrowLeft) moveSide -= 1;
+      if (keys.KeyD || keys.ArrowRight) moveSide += 1;
 
-        const speed = baseSpeed * speedMultiplier * delta;
-        moveCharacter(player.group, dx * speed, dz * speed, 0.4);
+      let moving = false;
+      if (moveForward !== 0 || moveSide !== 0) {
+        moving = true;
+        const len = Math.sqrt(moveForward * moveForward + moveSide * moveSide);
+        moveForward /= len;
+        moveSide /= len;
 
-        // Update facing
-        const angle = Math.atan2(dx, dz);
-        player.group.rotation.y = angle;
+        // yaw based on movement direction (no mouse, just cardinal)
+        const targetYaw = Math.atan2(moveSide, moveForward);
+        player.yaw = targetYaw;
 
-        // Leg animation
-        player.moveTime += delta * (speedMultiplier * 6);
+        const forwardX = Math.sin(player.yaw);
+        const forwardZ = Math.cos(player.yaw);
+
+        const rightX = Math.sin(player.yaw + Math.PI / 2);
+        const rightZ = Math.cos(player.yaw + Math.PI / 2);
+
+        const worldDX = (forwardX * moveForward + rightX * moveSide) * speed * delta;
+        const worldDZ = (forwardZ * moveForward + rightZ * moveSide) * speed * delta;
+
+        attemptMove(player.group, worldDX, worldDZ, PLAYER_RADIUS);
+      }
+
+      player.group.rotation.y = player.yaw;
+
+      if (moving) {
+        player.moveTime += delta * (effectiveRun ? 10 : 6);
         const swing = Math.sin(player.moveTime) * 0.6;
         player.leftLeg.rotation.x = swing;
         player.rightLeg.rotation.x = -swing;
       } else {
-        // Idle
         player.leftLeg.rotation.x *= 0.8;
         player.rightLeg.rotation.x *= 0.8;
       }
+    }
 
-      // Toys
-      toys.forEach((toy) => {
-        if (!toy.visible) return;
-        toy.rotation.y += delta * 2.5;
-        toy.position.y = toy.userData.baseY + Math.sin(performance.now() * 0.003 + toy.userData.phase) * 0.08;
-        const dist = toy.position.distanceTo(player.group.position);
-        if (dist < 0.7) {
-          toy.visible = false;
-          collectedToys++;
-          toyCountEl.textContent = collectedToys.toString();
-        }
-      });
-
-      // Exit
-      if (collectedToys >= TOY_TOTAL && gameState === "playing") {
-        const distToDoor = exitDoor.position.distanceTo(player.group.position);
-        if (distToDoor < 1.6) {
-          triggerWin();
-        }
-      }
+    function anyMoveKeyDown() {
+      return keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD ||
+             keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight;
     }
 
     function updateCamera(delta) {
-      const desiredPos = new THREE.Vector3(
+      const height = 1.7;
+      const backOffset = cameraDistance;
+
+      const lookPos = new THREE.Vector3(
         player.group.position.x,
-        player.group.position.y + KID_CAMERA_HEIGHT,
-        player.group.position.z + 1.2
-      );
-      camera.position.lerp(desiredPos, 0.15);
-      camera.lookAt(
-        player.group.position.x,
-        player.group.position.y + 0.7,
+        player.group.position.y + 1.2,
         player.group.position.z
       );
 
-      // Flashlight follows camera slightly in front
+      const behindX = Math.sin(player.yaw) * backOffset;
+      const behindZ = Math.cos(player.yaw) * backOffset;
+
+      const desiredPos = new THREE.Vector3(
+        player.group.position.x - behindX,
+        player.group.position.y + height,
+        player.group.position.z - behindZ
+      );
+
+      camera.position.lerp(desiredPos, 0.15);
+      camera.lookAt(lookPos);
+
+      // flashlight follows camera
       const t = performance.now() * 0.002;
       const jitter = flashlight.visible ? 0.04 : 0;
       flashlight.position.copy(camera.position);
       flashlight.position.x += Math.sin(t * 1.7) * jitter;
       flashlight.position.y += Math.sin(t * 2.3) * jitter;
-      const target = player.group.position.clone();
-      target.y += 0.6;
+
+      const target = lookPos.clone();
       flashlight.target.position.lerp(target, 0.3);
       flashlight.target.updateMatrixWorld();
     }
 
     function updateCameraInstant() {
       camera.position.set(
-        playerGroup.position.x,
-        playerGroup.position.y + KID_CAMERA_HEIGHT,
-        playerGroup.position.z + 1.2
+        player.group.position.x,
+        player.group.position.y + 1.7,
+        player.group.position.z + cameraDistance
       );
       camera.lookAt(
-        playerGroup.position.x,
-        playerGroup.position.y + 0.7,
-        playerGroup.position.z
+        player.group.position.x,
+        player.group.position.y + 1.2,
+        player.group.position.z
       );
     }
 
-    // ===== MONSTER =====
-    function createMonster() {
-      const monsterGroup = new THREE.Group();
-      monsterGroup.position.set(-HOUSE_SIZE / 2 + 5, 0, 0);
+    // ============ SKINWALKERS ============
+
+    function createSkinwalker(position) {
+      const group = new THREE.Group();
+      group.position.copy(position);
+
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: 0x050505,
+        roughness: 0.6,
+        emissive: 0x220000,
+        emissiveIntensity: 0.9
+      });
+      const limbMat = new THREE.MeshStandardMaterial({
+        color: 0x080808,
+        roughness: 0.8,
+        emissive: 0x220000,
+        emissiveIntensity: 0.6
+      });
+      const headMat = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        roughness: 0.6,
+        emissive: 0x440000,
+        emissiveIntensity: 1.2
+      });
 
       // Tall body
       const bodyGeo = new THREE.BoxGeometry(0.8, 3.2, 0.5);
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: 0x050505,
-        emissive: 0x330000,
-        emissiveIntensity: 1.0,
-        roughness: 0.6
-      });
       const body = new THREE.Mesh(bodyGeo, bodyMat);
       body.position.set(0, 1.6, 0);
 
       // Arms
-      const armGeo = new THREE.BoxGeometry(0.18, 2.2, 0.18);
-      const armMat = new THREE.MeshStandardMaterial({
-        color: 0x080808,
-        emissive: 0x220000,
-        emissiveIntensity: 0.8
-      });
-      const leftArm = new THREE.Mesh(armGeo, armMat);
-      const rightArm = new THREE.Mesh(armGeo, armMat);
-      leftArm.position.set(-0.7, 1.1, 0);
-      rightArm.position.set(0.7, 1.1, 0);
+      const armGeo = new THREE.BoxGeometry(0.16, 2.1, 0.16);
+      const leftArm = new THREE.Mesh(armGeo, limbMat);
+      const rightArm = new THREE.Mesh(armGeo, limbMat);
+      leftArm.position.set(-0.7, 1.2, 0);
+      rightArm.position.set(0.7, 1.2, 0);
+
+      // Legs (thin)
+      const legGeo = new THREE.BoxGeometry(0.18, 2.1, 0.18);
+      const leftLeg = new THREE.Mesh(legGeo, limbMat);
+      const rightLeg = new THREE.Mesh(legGeo, limbMat);
+      leftLeg.position.set(-0.25, 0.6, 0);
+      rightLeg.position.set(0.25, 0.6, 0);
 
       // Head
       const headGeo = new THREE.BoxGeometry(0.7, 0.9, 0.4);
-      const headMat = new THREE.MeshStandardMaterial({
-        color: 0x111111,
-        emissive: 0x550000,
-        emissiveIntensity: 1.2
-      });
       const head = new THREE.Mesh(headGeo, headMat);
-      head.position.set(0, 2.6, 0.1);
+      head.position.set(0, 2.7, 0.1);
 
       // Eyes
       const eyeGeo = new THREE.BoxGeometry(0.15, 0.15, 0.05);
       const eyeMat = new THREE.MeshStandardMaterial({
-        color: 0xff0000,
-        emissive: 0xff0000,
+        color: 0x88cfff,
+        emissive: 0x88cfff,
         emissiveIntensity: 1.7
       });
       const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
       const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-      leftEye.position.set(-0.18, 2.7, 0.28);
-      rightEye.position.set(0.18, 2.7, 0.28);
+      leftEye.position.set(-0.18, 2.8, 0.28);
+      rightEye.position.set(0.18, 2.8, 0.28);
 
-      // Mouth
-      const mouthGeo = new THREE.BoxGeometry(0.5, 0.09, 0.05);
-      const mouthMat = new THREE.MeshStandardMaterial({
-        color: 0xaa0000,
-        emissive: 0xaa0000,
-        emissiveIntensity: 1.4
-      });
-      const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-      mouth.position.set(0, 2.4, 0.28);
+      const glow = new THREE.PointLight(0x88cfff, 1.0, 10);
+      glow.position.set(0, 2.7, 0.3);
 
-      // Light
-      const light = new THREE.PointLight(0xff0000, 1.4, 10);
-      light.position.set(0, 2.6, 0.3);
+      group.add(body, leftArm, rightArm, leftLeg, rightLeg, head, leftEye, rightEye, glow);
 
-      monsterGroup.add(body, leftArm, rightArm, head, leftEye, rightEye, mouth, light);
-      scene.add(monsterGroup);
+      scene.add(group);
 
-      monster = {
-        group: monsterGroup,
-        swayTime: 0
+      return {
+        group,
+        state: "patrol", // patrol, warning, chase
+        target: randomPatrolPoint(),
+        speed: 1.3 + Math.random() * 0.4,
+        swayTime: Math.random() * 10,
+        warningPlayed: false
       };
     }
 
-    function chooseMonsterPatrolPoint() {
-      const spots = [
-        new THREE.Vector3(-10, 0, 0),
-        new THREE.Vector3(10, 0, 0),
-        new THREE.Vector3(0, 0, -6),
-        new THREE.Vector3(0, 0, -12),
-        new THREE.Vector3(6, 0, -6),
-        new THREE.Vector3(-6, 0, -6)
-      ];
-      monsterTarget = spots[Math.floor(Math.random() * spots.length)].clone();
+    function randomPatrolPoint() {
+      // somewhere within trees but not too near centre
+      while (true) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = CLEARING_RADIUS + 5 + Math.random() * (PARK_RADIUS - CLEARING_RADIUS - 10);
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        return new THREE.Vector3(x, 0, z);
+      }
     }
 
-    function updateMonster(delta) {
-      if (!monsterTarget) chooseMonsterPatrolPoint();
+    function createSkinwalkersForLevel(level) {
+      // Remove old ones
+      skinwalkers.forEach(s => scene.remove(s.group));
+      skinwalkers = [];
 
-      const mpos = monster.group.position;
-      const ppos = player.group.position;
-      const toPlayer = new THREE.Vector3().subVectors(ppos, mpos);
-      const distance = toPlayer.length();
-
-      // Check if in same hallway-ish area
-      const sameHall = Math.abs(mpos.z - 0) < 2 && Math.abs(ppos.z - 0) < 2 ||
-                       Math.abs(mpos.x - 0) < 2 && Math.abs(ppos.x - 0) < 2;
-
-      const alertRange = 9;
-      const chaseRange = 14;
-      let speed = 1.3;
-      let target;
-
-      if (distance < chaseRange && sameHall) {
-        // Monster clearly sees you
-        monsterAlert = true;
-        target = ppos;
-        speed = distance < alertRange ? 3.4 : 2.4;
-
-        // Growl occasionally
-        if (growlSound.paused && distance < 8) {
-          growlSound.currentTime = 0;
-          growlSound.volume = 0.7;
-          growlSound.play().catch(() => {});
-        }
-      } else if (monsterAlert || distance < alertRange) {
-        // Knows roughly where you are
-        monsterAlert = true;
-        target = ppos;
-        speed = 2.2;
-      } else {
-        // Patrol
-        target = monsterTarget;
-        speed = 1.1;
-        if (mpos.distanceTo(monsterTarget) < 0.7) {
-          chooseMonsterPatrolPoint();
-        }
+      const count = baseSkinwalkers + level - 1;
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = CLEARING_RADIUS + 15 + Math.random() * 20;
+        const pos = new THREE.Vector3(
+          Math.cos(angle) * radius,
+          0,
+          Math.sin(angle) * radius
+        );
+        skinwalkers.push(createSkinwalker(pos));
       }
-
-      const dir = new THREE.Vector3().subVectors(target, mpos);
-      dir.y = 0;
-      const len = dir.length();
-      if (len > 0.01) {
-        dir.normalize();
-        const stepX = dir.x * speed * delta;
-        const stepZ = dir.z * speed * delta;
-        moveCharacter(monster.group, stepX, stepZ, 0.4);
-      }
-
-      // Sway and face player
-      monster.swayTime += delta;
-      monster.group.position.y = Math.sin(monster.swayTime * 2) * 0.08;
-      monster.group.lookAt(
-        ppos.x,
-        ppos.y + 0.7,
-        ppos.z
-      );
-
-      // Catch condition
-      if (distance < 1 && gameState === "playing") {
-        triggerCaught();
-      }
-
-      updateFearOverlay(distance);
     }
 
-    function updateFearOverlay(distance) {
-      const maxRange = 16;
-      const d = Math.max(0, Math.min(maxRange, maxRange - distance));
-      const danger = d / maxRange; // 0–1
+    function updateSkinwalkers(delta) {
+      const playerPos = player.group.position;
 
+      let closestDist = Infinity;
+
+      for (const s of skinwalkers) {
+        const pos = s.group.position;
+        const toPlayer = new THREE.Vector3().subVectors(playerPos, pos);
+        const distance = toPlayer.length();
+        if (distance < closestDist) closestDist = distance;
+
+        // behaviour
+        const attackRadius = 1.3;
+        const warningRadius = 13;
+        const chaseRadius = 20;
+
+        if (distance < attackRadius && gameState === "playing") {
+          triggerDeath("A tall shape steps out of the trees",
+            "You heard the whistling too late. Something cold and thin closed the distance in a heartbeat.");
+          return;
+        }
+
+        if (distance < warningRadius && s.state === "patrol") {
+          s.state = "warning";
+          if (!s.warningPlayed) {
+            s.warningPlayed = true;
+            tryPlay(whistleSound, 0.9);
+            tryPlay(stepsSound, 0.45);
+          }
+        }
+
+        if (distance < chaseRadius && s.state !== "chase") {
+          s.state = "chase";
+        }
+
+        let target;
+        let speed = s.speed;
+
+        if (s.state === "patrol") {
+          target = s.target;
+          if (pos.distanceTo(s.target) < 1) {
+            s.target = randomPatrolPoint();
+          }
+        } else if (s.state === "warning") {
+          target = s.target;
+          if (pos.distanceTo(s.target) < 1) {
+            s.target = randomPatrolPoint();
+          }
+          speed *= 1.1;
+        } else {
+          // chase
+          target = playerPos;
+          speed *= 2.3;
+        }
+
+        const dir = new THREE.Vector3().subVectors(target, pos);
+        dir.y = 0;
+        const len = dir.length();
+        if (len > 0.01) {
+          dir.normalize();
+          const stepX = dir.x * speed * delta;
+          const stepZ = dir.z * speed * delta;
+          attemptMove(s.group, stepX, stepZ, 0.6);
+        }
+
+        // sway / look
+        s.swayTime += delta * 2;
+        s.group.position.y = Math.sin(s.swayTime) * 0.1;
+        s.group.lookAt(playerPos.x, playerPos.y + 1, playerPos.z);
+      }
+
+      // adjust danger overlay based on nearest skinwalker
+      const maxRange = 35;
+      const d = Math.max(0, Math.min(maxRange, maxRange - closestDist));
+      const danger = d / maxRange;
       dangerOverlay.style.opacity = (danger * 0.9).toFixed(2);
 
-      // Heartbeat volume
-      if (gameState === "playing") {
-        if (danger > 0.1 && heartSound.paused) {
-          heartSound.currentTime = 0;
-          heartSound.play().catch(() => {});
-        }
-        heartSound.volume = Math.min(0.9, danger * 1.1);
-      } else {
-        heartSound.volume = 0;
-        heartSound.pause();
+      if (danger < 0.1) {
+        stepsSound.pause();
       }
     }
 
-    // ===== TOYS & EXIT =====
-    function createToys() {
-      const positions = [
-        new THREE.Vector3(-12, 0, -8),
-        new THREE.Vector3(12, 0, -8),
-        new THREE.Vector3(-14, 0, 8),
-        new THREE.Vector3(10, 0, 10)
-      ];
+    // ============ COLLISION ============
 
-      positions.forEach((pos, i) => {
-        const geo = new THREE.SphereGeometry(0.3, 18, 18);
-        const mat = new THREE.MeshStandardMaterial({
-          color: 0x00ffd5,
-          emissive: 0x00ffd5,
-          emissiveIntensity: 1.3,
-          roughness: 0.2
-        });
-        const toy = new THREE.Mesh(geo, mat);
-        toy.position.set(pos.x, 0.3, pos.z);
-        toy.userData.baseY = 0.3;
-        toy.userData.phase = i * 1.3;
-        toy.castShadow = true;
-        scene.add(toy);
-        toys.push(toy);
-      });
-    }
-
-    function createExitDoor() {
-      exitDoor = new THREE.Group();
-      exitDoor.position.set(0, 0, HOUSE_SIZE / 2 - 0.6);
-
-      const frameMat = new THREE.MeshStandardMaterial({
-        color: 0x151515,
-        roughness: 0.8
-      });
-      const doorMat = new THREE.MeshStandardMaterial({
-        color: 0x222222,
-        roughness: 0.95
-      });
-
-      const frameTopGeo = new THREE.BoxGeometry(3, 0.3, 0.4);
-      const frameSideGeo = new THREE.BoxGeometry(0.25, 2.9, 0.4);
-      const doorGeo = new THREE.BoxGeometry(2.2, 2.6, 0.2);
-
-      const top = new THREE.Mesh(frameTopGeo, frameMat);
-      const left = new THREE.Mesh(frameSideGeo, frameMat);
-      const right = new THREE.Mesh(frameSideGeo, frameMat);
-      const door = new THREE.Mesh(doorGeo, doorMat);
-
-      top.position.set(0, 2.4, 0);
-      left.position.set(-1.4, 1.2, 0);
-      right.position.set(1.4, 1.2, 0);
-      door.position.set(0, 1.2, 0);
-
-      exitDoor.add(top, left, right, door);
-      scene.add(exitDoor);
-    }
-
-    // ===== COLLISION / MOVEMENT =====
-    function moveCharacter(group, dx, dz, radius) {
-      const newPos = group.position.clone();
+    function attemptMove(obj, dx, dz, radius) {
+      const newPos = obj.position.clone();
       newPos.x += dx;
       newPos.z += dz;
 
-      // Walls collision
-      const colliders = walls.concat(furniture);
-      for (const w of colliders) {
-        const p = w.geometry.parameters;
-        const wx = w.position.x;
-        const wy = w.position.y;
-        const wz = w.position.z;
-        const sx = p.width / 2;
-        const sy = p.height / 2;
-        const sz = p.depth / 2;
+      // Stay inside park
+      const distFromCentre = Math.sqrt(newPos.x * newPos.x + newPos.z * newPos.z);
+      if (distFromCentre > PARK_RADIUS - 1) return;
 
-        if (
-          newPos.x + radius > wx - sx &&
-          newPos.x - radius < wx + sx &&
-          newPos.y + radius > wy - sy &&
-          newPos.y - radius < wy + sy &&
-          newPos.z + radius > wz - sz &&
-          newPos.z - radius < wz + sz
-        ) {
+      // Collide with trees
+      for (const t of trees) {
+        const dxT = newPos.x - t.x;
+        const dzT = newPos.z - t.z;
+        const distSq = dxT * dxT + dzT * dzT;
+        const minDist = radius + t.radius;
+        if (distSq < minDist * minDist) {
           return; // blocked
         }
       }
 
-      group.position.copy(newPos);
+      obj.position.copy(newPos);
     }
 
-    // ===== INPUT =====
+    // ============ INPUT HANDLERS ============
+
     function onKeyDown(e) {
       if (keys.hasOwnProperty(e.code)) {
         keys[e.code] = true;
@@ -888,10 +836,9 @@
       if (gameState === "waiting") {
         gameState = "playing";
         startHint.style.display = "none";
-        tryStartAudio();
       }
 
-      if (gameState !== "playing" && e.code === "Space") {
+      if (gameState === "dead" && e.code === "Space") {
         restartGame();
       }
     }
@@ -908,50 +855,50 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    // ===== GAME STATE =====
-    function triggerCaught() {
-      gameState = "caught";
-      overlay.style.display = "flex";
-      overlayTitle.textContent = "It Found You";
-      overlayTitle.style.color = "#ff4444";
-      overlayText.textContent =
-        "You froze in the hallway and felt something tall lean over you. The house is quiet again. It knows you now.";
-      dangerOverlay.style.opacity = "1";
+    function onWheel(e) {
+      const delta = e.deltaY > 0 ? 1 : -1;
+      cameraDistance += delta * 0.6;
+      cameraDistance = Math.max(cameraMin, Math.min(cameraMax, cameraDistance));
     }
 
-    function triggerWin() {
-      gameState = "win";
+    // ============ GAME STATE / LEVELS ============
+
+    function triggerDeath(title, text) {
+      if (gameState !== "playing") return;
+      gameState = "dead";
       overlay.style.display = "flex";
-      overlayTitle.textContent = "You Got Out";
-      overlayTitle.style.color = "#66ff99";
-      overlayText.textContent =
-        "You grabbed your toys and slipped out through the front door. You still hear footsteps in the hallway when you try to sleep.";
-      dangerOverlay.style.opacity = "0";
+      overlayTitle.textContent = title;
+      overlayTitle.style.color = "#ff4444";
+      overlayText.textContent = text;
+      dangerOverlay.style.opacity = "1";
+      stepsSound.pause();
+    }
+
+    function nextLevel() {
+      level += 1;
+      levelNumEl.textContent = level.toString();
+      levelTime = 0;
+      createSkinwalkersForLevel(level);
+      tryPlay(whistleSound, 0.5);
     }
 
     function restartGame() {
       overlay.style.display = "none";
       dangerOverlay.style.opacity = "0";
-      gameState = "playing";
-      collectedToys = 0;
-      toyCountEl.textContent = "0";
+      level = 1;
+      levelTime = 0;
+      levelNumEl.textContent = "1";
       stamina = 1;
       staminaBar.style.transform = "scaleX(1)";
-      monsterAlert = false;
-      monsterTarget = null;
-
-      player.group.position.set(0, 0, HOUSE_SIZE / 2 - 3);
-      monster.group.position.set(-HOUSE_SIZE / 2 + 5, 0, 0);
-
-      toys.forEach((toy) => {
-        toy.visible = true;
-      });
-
+      player.group.position.set(0, 0, 0);
+      createSkinwalkersForLevel(level);
       updateCameraInstant();
-      tryStartAudio();
+      gameState = "playing";
+      tryPlay(whistleSound, 0.3);
     }
 
-    // ===== LOOP =====
+    // ============ LOOP ============
+
     function animate() {
       requestAnimationFrame(animate);
       const now = performance.now();
@@ -959,13 +906,16 @@
       lastTime = now;
 
       if (gameState === "playing") {
+        levelTime += delta;
+        if (levelTime >= levelLength) {
+          nextLevel();
+        }
+
         updatePlayer(delta);
-        updateMonster(delta);
-        updateCamera(delta);
-      } else if (gameState === "waiting") {
-        updateCamera(delta);
+        updateSkinwalkers(delta);
       }
 
+      updateCamera(delta);
       renderer.render(scene, camera);
     }
 
@@ -974,4 +924,3 @@
   </script>
 </body>
 </html>
-
