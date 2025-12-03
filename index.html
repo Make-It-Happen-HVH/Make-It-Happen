@@ -168,7 +168,7 @@
   </form>
 
   <button id="view-code-btn" class="btn btn-small" type="button" style="margin-top:4px;">
-    View saved login password
+    Se gemt login adgangskode.
   </button>
   <p id="saved-code-display" style="display:none; margin-top:6px;"></p>
 
@@ -1699,9 +1699,9 @@
     btn.addEventListener("click", () => {
       const saved = localStorage.getItem(LS_PASSWORD_KEY);
       if (saved) {
-        display.textContent = "Saved login password on this device: " + saved;
+        display.textContent = "Gemt login adgangskode på denne enhed: " + saved;
       } else {
-        display.textContent = "No login password has been saved on this device yet.";
+        display.textContent = "Ingen login adgangskode gemt på denne enhed.";
       }
       display.style.display = "block";
     });
